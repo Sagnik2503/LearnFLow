@@ -6,5 +6,6 @@ dist/
 wheels/
 *.egg-info
 .env
+learnflow.db
 # Virtual environments
 .venv
