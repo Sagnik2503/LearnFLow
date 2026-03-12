@@ -1,4 +1,11 @@
-from schemas.schemas import ContentState, ExaResult, ConceptBrief, Plan
+from schemas.schemas import (
+    ContentState,
+    ExaResult,
+    ConceptBrief,
+    Plan,
+    Feedback,
+    CriticOutput,
+)
 from langchain_groq import ChatGroq
 import os
 from langgraph.graph import START, END, StateGraph
@@ -470,16 +477,110 @@ def build_graph():
     return g.compile()
 
 
-if __name__ == "__main__":
+def critic_node(state: ContentState) -> ContentState:
+    """this node will give feedback based on the content that has been generated for the newsletter"""
 
-    graph = build_graph()
-    esult = graph.invoke(
-        {
-            "item": {
-                "day": 1,
-                "title": "Introduction to Nutritious food",
-                "concepts": ["neurons", "layers", "activation functions"],
-            },
-            "research_summary": [],
-        }
+    CRITIC_PROMPT = """
+    You are a strict and senior newsletter editor reviewing a draft for quality.
+
+    Your job is to flag ONLY real problems — do not rewrite, just annotate.
+
+    Draft:
+    {draft}
+
+    Review against these rules and flag any violations:
+
+    1. REPETITION
+        - Flag any phrase, sentence, or example used more than once across the newsletter
+        - Flag any section that ends with the same conclusion as another section
+
+    2. PADDING
+        - Flag any sentence that does not teach the reader something specific
+        - Flag vague filler phrases like:
+        * "you'll gain a deeper appreciation"
+        * "every AI breakthrough you've heard of"
+        * "by understanding this"
+        * "the complexity and beauty of"
+        * "something that seems effortless to humans"
+        * Any sentence that could be deleted without losing information
+
+    3. SHALLOW EXPLANATION
+        - Flag any key point that is stated but never actually explained
+        - Flag any claim made without a specific example or fact to back it up
+
+    4. HALLUCINATION RISK
+        - Flag any specific number, statistic, or claim that is not grounded in the research provided
+        - Do not flag general knowledge claims
+
+    5. REDUNDANT EXAMPLES
+        - Flag if the same real world example (e.g. handwritten digits, cat recognition) is used in more than one section
+        - Each section MUST use a different example
+
+    ---
+
+    Research used to write this newsletter:
+    {research_summaries}
+
+    ---
+
+    For each issue found output:
+    - section: which section heading has the problem
+    - issue: what exactly is wrong, quote the specific text
+    - suggestion: exact instruction to fix it — be specific
+
+    If the newsletter passes all checks set approved = True and annotations = [].
+
+    Return a valid CriticOutput object.
+    """
+    print(f"\n{'='*60}")
+    print(f"🔍 CRITIC NODE")
+    print(f"{'='*60}")
+
+    revision_count = state.get("revision_count", 0)
+
+    # auto approve after 3 cycles
+    if revision_count >= 3:
+        print(f"   ⚠️ Max revisions reached — auto approving")
+        return {"approved": True, "feedback": []}
+
+    research_text = ""
+    for brief in state["research_summary"]:
+        research_text += f"""
+        ---
+        Concept: {brief.concept}
+        Definition: {brief.definition}
+        Real World Example: {brief.example}
+        Fun Fact: {brief.fun_fact}
+        Best URL: {brief.best_url}
+        ---
+        """
+    prompt = CRITIC_PROMPT.format(
+        draft=state["draft"], research_summaries=research_text
     )
+    result = llm.with_structured_output(CriticOutput).invoke(prompt)
+
+    print(f"   📋 Annotations: {len(result.feedbacks)}")
+    for annotation in result.annotations:
+        print(f"   ⚠️  [{annotation.section}] {annotation.issue[:80]}...")
+        print(f"   ✅ Approved: {result.approved}")
+        print(f"{'='*60}\n")
+
+        return {
+            "feedbacks": result.feedbacks,
+            "approved": result.approved,
+            "revision_count": revision_count + 1,
+        }
+
+    if __name__ == "__main__":
+
+        graph = build_graph()
+        esult = graph.invoke(
+            {
+                "item": {
+                    "day": 1,
+                    "title": "Introduction to Nutritious food",
+                    "concepts": ["neurons", "layers", "activation functions"],
+                },
+                "research_summary": [],
+            }
+        )

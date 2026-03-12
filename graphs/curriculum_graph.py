@@ -6,7 +6,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 import os
 import re
 import sqlalchemy as sa
-from schemas.all_schemas import (
+from schemas.schemas import (
     SyllabusItem,
     AgentState,
     Source,

@@ -52,6 +52,17 @@ class Plan(BaseModel):
     takeaway: str
 
 
+class Feedback(BaseModel):
+    section: str
+    issue: str
+    suggestion: str
+
+
+class CriticOutput(BaseModel):
+    feedbacks: List[Feedback]
+    approved: bool
+
+
 class ContentState(TypedDict):
     item: SyllabusItem
     plan: Plan | None = None
@@ -62,3 +73,5 @@ class ContentState(TypedDict):
     revision_count: int = 0
     approved: bool = False
     newsletter: str = ""
+    feedbacks = List[Feedback]
+    revision_count: int = Field(ge=0, le=3)
