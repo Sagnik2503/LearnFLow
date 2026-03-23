@@ -1,5 +1,45 @@
 from sqlalchemy.orm import Session
-from db.models import Track, SyllabusItem
+from db.models import Track, SyllabusItem, User, UserTrack, GeneratedNewsletter
+
+
+def create_user(db: Session, user_id: str):
+    user = User(id=user_id)
+    db.add(user)
+    db.commit()
+    return user
+
+
+def create_user_track(db: Session, user_id: str, track_id: int, total_days: int):
+    user_track = UserTrack(
+        user_id=user_id,
+        track_id=track_id,
+        current_day=1,
+        total_days=total_days,
+    )
+    db.add(user_track)
+    db.commit()
+    db.refresh(user_track)
+    return user_track
+
+
+def get_newsletter(db: Session, user_track_id: int, day: int):
+    return (
+        db.query(GeneratedNewsletter)
+        .filter_by(user_track_id=user_track_id, day=day)
+        .first()
+    )
+
+
+def create_newsletter(db: Session, user_track_id: int, day: int, content: str):
+    newsletter = GeneratedNewsletter(
+        user_track_id=user_track_id,
+        day=day,
+        content=content,
+    )
+    db.add(newsletter)
+    db.commit()
+    db.refresh(newsletter)
+    return newsletter
 
 
 def create_track(db: Session, topic: str, total_days: int) -> Track:

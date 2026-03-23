@@ -40,21 +40,40 @@ class SyllabusItem(Base):
         )
 
 
-class DayCard(Base):
-    __tablename__ = "day_cards"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
-    day = Column(Integer, nullable=False)
-    hook = Column(String, nullable=False)
-    body = Column(String, nullable=False)
-    takeaways = Column(JSON, nullable=False)  # list[str]
-    diagram_code = Column(String, nullable=True)  # Mermaid string
-    diagram_type = Column(String, nullable=True)  # "mindmap" | "flowchart" etc
-    sources = Column(JSON, nullable=True)  # [{title, url, summary}]
+class User(Base):
+    __tablename__ = "users"
+    id = Column(String, primary_key=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    track = relationship("Track", back_populates="day_cards")
+    tracks = relationship(
+        "UserTrack", back_populates="user", cascade="all, delete-orphan"
+    )
 
-    def __repr__(self):
-        return f"<DayCard track={self.track_id} day={self.day}>"
+
+class UserTrack(Base):
+    __tablename__ = "user_tracks"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
+    current_day = Column(Integer, default=1)
+    total_days = Column(Integer, nullable=False)
+    last_seen = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="tracks")
+    track = relationship("Track")
+    newsletters = relationship(
+        "GeneratedNewsletter", back_populates="user_track", cascade="all, delete-orphan"
+    )
+
+
+class GeneratedNewsletter(Base):
+    __tablename__ = "generated_newsletters"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_track_id = Column(Integer, ForeignKey("user_tracks.id"), nullable=False)
+    day = Column(Integer, nullable=False)
+
+    content = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user_track = relationship("UserTrack", back_populates="newsletters")
