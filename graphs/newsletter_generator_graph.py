@@ -1,4 +1,4 @@
-from schemas.schemas import (
+from schema.schemas import (
     ContentState,
     ExaResult,
     ConceptBrief,
@@ -281,7 +281,7 @@ def critic_node(state: ContentState) -> ContentState:
     # auto approve after 3 cycles
     if revision_count >= 2:
         print(f"   ⚠️ Max revisions reached — auto approving")
-        return {"approved": True, "feedback": []}
+        return {"approved": True, "feedbacks": []}
 
     research_text = ""
     for brief in state["research_summary"]:

@@ -18,9 +18,6 @@ class Track(Base):
     syllabus_items = relationship(
         "SyllabusItem", back_populates="track", cascade="all, delete-orphan"
     )
-    day_cards = relationship(
-        "DayCard", back_populates="track", cascade="all, delete-orphan"
-    )
 
 
 class SyllabusItem(Base):

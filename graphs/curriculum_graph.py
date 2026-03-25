@@ -6,13 +6,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 import os
 import re
 import sqlalchemy as sa
-from schemas.schemas import (
-    DaysDecision,
-    AgentState,
-    Source,
-    FilteredSources,
-    SyllabusOutput,
-)
+from schema.schemas import DaysDecision, AgentState, SyllabusOutput
 from db.database import init_db, SessionLocal
 from db.crud import create_track, save_syllabus
 
@@ -138,7 +132,12 @@ def save_to_db(state: AgentState) -> dict:
         )
 
         print(f"[save_to_db] Track {track.id} saved — {len(state['syllabus'])} days")
-        return {"track_id": track.id}
+        return {
+            "track_id": track.id,
+            "topic": state["topic"],
+            "total_days": state["total_days"],
+            "syllabus": state["syllabus"],  # 👈 THIS WAS MISSING
+        }
 
     except Exception as e:
         db.rollback()

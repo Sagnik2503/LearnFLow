@@ -30,6 +30,10 @@ def get_newsletter(db: Session, user_track_id: int, day: int):
     )
 
 
+def get_user_track(db: Session, user_id: str, track_id: int):
+    return db.query(UserTrack).filter_by(user_id=user_id, track_id=track_id).first()
+
+
 def create_newsletter(db: Session, user_track_id: int, day: int, content: str):
     newsletter = GeneratedNewsletter(
         user_track_id=user_track_id,

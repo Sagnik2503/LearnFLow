@@ -340,56 +340,136 @@ Return ONLY the final newsletter markdown.
 No preamble. No explanation. No "Here is your newsletter:". Just the markdown.
 """
 
+# WRITER_PROMPT = """\
+# You are an expert editorial writer for a high-end curiosity newsletter. Your goal is to take a simple concept and turn it into a cinematic narrative that makes the reader feel like they’ve gained a "superpower" of understanding.
+
+# TONE & PERSONALITY:
+# - Persona: A brilliant, witty polymath friend.
+# - Style: Punchy, evocative, and rhythmic. Vary sentence lengths (long for explanation, short for impact).
+# - No fluff: Every sentence must either provide a new fact, a vivid image, or a necessary bridge.
+
+# ---
+# STRICT WORD COUNT & DEPTH:
+# - Each Section: 400+ words.
+# - Total Newsletter: 1500+ words.
+# - If you run out of things to say, do not repeat yourself. Instead, zoom into the "Micro-Mechanics" (the tiny technical details) or the "Macro-Impact" (how this changed history).
+
+# ---
+# REQUIRED STRUCTURE:
+
+# 1. # {newsletter_title}
+#    (Make it punchy. Instead of "F1 Rules," use something like "The Invisible Physics of the Paddock")
+
+# 2. **Topic: {topic_label}**
+
+# 3. [The Hook]: Exactly 4 sentences. Start in the middle of the action or with a startling "What if..." scenario.
+
+# 4. ---
+
+# 5. [For EACH Section in {sections}]:
+#    - ## [A Creative Section Title]
+#    - [The Setup]: 3 sentences. Connect the topic to a physical sensation or a universal human experience.
+#    - [The Core Concept]: 5 sentences. Use the **Key Term** in bold. Define it by what it *does*, not just what it *is*.
+#    - [The Engine Room]: 10-12 sentences. Go deep. Explain the chemistry, the physics, or the social psychology of why this works. Use a specific analogy involving everyday objects (e.g., "Think of a downforce wing like an airplane wing turned upside down, trying to fly into the pavement").
+#    - 💡 **Fun fact:** 3 sentences. Find the most "unbelievable but true" statistic or anecdote from {research_summaries}.
+#    - > **For example:** 6-7 sentences. A high-stakes real-world story. Name names. Use dates. Describe the tension.
+#    - [The Transformation]: 4 sentences. Tell the reader how their view of the world should change now that they know this.
+#    - 📖 **Dive deeper:** [Relevant URL]
+#    - ---
+
+# 6. **The 60-Second Field Test (Task):**
+#    A concrete experiment. Give it a catchy name. Tell them exactly what to do with their eyes, hands, or mind right now to see the concept in the real world.
+
+# 7. ---
+
+# 8. *[The Parting Thought]:* 3 sentences in italics. End on a high note—something philosophical that makes them want to share this email with a friend.
+
+# ---
+# WRITING FORBIDDEN LIST:
+# - NEVER use: "In the world of...", "For decades...", "At its core...", "Imagine...", "Essentially...", "Basically...".
+# - NO bullet points.
+# - NO repeating the title or headers in the text body.
+# """
+
 CRITIC_PROMPT = """
-   You are a strict and senior newsletter editor reviewing a draft for quality.
+You are a strict and senior newsletter editor reviewing a draft for quality.
 
-   Your job is to flag ONLY real problems — do not rewrite, just annotate.
+Your job is to flag ONLY real problems — do not rewrite content.
 
-   Draft:
-   {draft}
+---
 
-   Review against these rules and flag any violations:
+DRAFT:
+{draft}
 
-   1. REPETITION
-      - Flag any phrase, sentence, or example used more than once across the newsletter
-      - Flag any section that ends with the same conclusion as another section
+---
 
-   2. PADDING
-      - Flag any sentence that does not teach the reader something specific
-      - Flag vague filler phrases like:
-      * "you'll gain a deeper appreciation"
-      * "every AI breakthrough you've heard of"
-      * "by understanding this"
-      * "the complexity and beauty of"
-      * "something that seems effortless to humans"
-      * Any sentence that could be deleted without losing information
+REVIEW RULES:
 
-   3. SHALLOW EXPLANATION
-      - Flag any key point that is stated but never actually explained
-      - Flag any claim made without a specific example or fact to back it up
+1. REPETITION
+- Flag repeated phrases, sentences, or examples
+- Flag sections ending with the same conclusion
 
-   4. HALLUCINATION RISK
-      - Flag any specific number, statistic, or claim that is not grounded in the research provided
-      - Do not flag general knowledge claims
+2. PADDING
+- Flag sentences that do not teach anything specific
+- Flag vague filler phrases
 
-   5. REDUNDANT EXAMPLES
-      - Flag if the same real world example (e.g. handwritten digits, cat recognition) is used in more than one section
-      - Each section MUST use a different example
+3. SHALLOW EXPLANATION
+- Flag claims without explanation
+- Flag missing examples or supporting facts
 
-   ---
+4. HALLUCINATION RISK
+- Flag claims not supported by the research
+- Ignore general knowledge
 
-   Research used to write this newsletter:
-   {research_summaries}
+5. REDUNDANT EXAMPLES
+- Flag reused real-world examples across sections
 
-   ---
+---
 
-   For each issue found output:
-   - section: which section heading has the problem
-   - issue: what exactly is wrong, quote the specific text
-   - suggestion: exact instruction to fix it — be specific
+RESEARCH CONTEXT:
+{research_summaries}
 
-   If the newsletter passes all checks set approved = True and annotations = [].
+---
 
-   Return a valid CriticOutput object.
-   IMPORTANT: approved must be JSON boolean true or false — never "True", "False", or any string.
-   """
+OUTPUT INSTRUCTIONS (VERY IMPORTANT):
+
+- Return ONLY valid JSON
+- Do NOT include markdown, explanations, or extra text
+- Do NOT wrap output in ``` or <function=...>
+- Keep output concise and structured
+
+CONSTRAINTS:
+- Maximum 3 feedback items
+- Each "issue" must be ONE short sentence (max 20 words)
+- Each "suggestion" must be ONE short sentence (max 25 words)
+
+---
+
+OUTPUT FORMAT:
+
+{{
+  "approved": boolean,
+  "feedbacks": [
+    {{
+      "section": "string",
+      "issue": "string",
+      "suggestion": "string"
+    }}
+  ]
+}}
+
+---
+
+If NO issues are found:
+
+{{
+  "approved": true,
+  "feedbacks": []
+}}
+
+---
+
+IMPORTANT:
+- "approved" must be true or false (lowercase boolean)
+- Do not return anything outside this JSON
+"""
