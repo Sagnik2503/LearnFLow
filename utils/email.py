@@ -15,91 +15,80 @@ def markdown_to_html(md_content: str) -> str:
 def wrap_email_html(
     title: str, html_body: str, day_num: int = 1, total_days: int = 30
 ) -> str:
-    # Calculate progress percentage for the top bar
-    progress = min(max((day_num / total_days) * 100, 2), 100)
+    progress = int((day_num / total_days) * 100)
 
     return f"""
     <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    </head>
-    <body style="margin:0; padding:0; background-color:#fcfcfd; font-family:'Inter', Helvetica, Arial, sans-serif; -webkit-font-smoothing:antialiased;">
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #fcfcfd;">
-            <tr>
-                <td align="center" style="padding: 20px 0 50px 0;">
-                    
-                    <table width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin-bottom: 20px;">
-                        <tr>
-                            <td style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; padding-bottom: 8px;">
-                                Progress: Day {day_num} of {total_days}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td height="4" style="background-color: #f1f5f9; border-radius: 2px;">
-                                <div style="background-color: #6366f1; width: {progress}%; height: 4px; border-radius: 2px;"></div>
-                            </td>
-                        </tr>
-                    </table>
+    <html>
+    <body style="margin:0; padding:0; background:#f4f1ed; font-family:Arial, sans-serif;">
 
-                    <table width="600" border="0" cellspacing="0" cellpadding="0" 
-                           style="max-width: 600px; background-color: #ffffff; border: 1px solid #f1f5f9; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden;">
-                        
-                        <tr>
-                            <td style="padding: 60px 50px 40px 50px; text-align: left; border-bottom: 1px solid #f8fafc;">
-                                <div style="color: #6366f1; font-weight: 700; font-size: 13px; margin-bottom: 15px; letter-spacing: 1px;">
-                                    DAILY KNOWLEDGE RECAP
-                                </div>
-                                <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 42px; line-height: 1.1; color: #0f172a; letter-spacing: -1px;">
-                                    {title}
-                                </h1>
-                            </td>
-                        </tr>
+    <table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+    <td align="center">
 
-                        <tr>
-                            <td style="padding: 40px 50px; color: #334155; font-size: 17px; line-height: 1.8;">
-                                <div style="color: #475569;">
-                                    {html_body}
-                                </div>
-                            </td>
-                        </tr>
+    <!-- MAIN CARD -->
+    <table width="600" cellpadding="0" cellspacing="0" 
+    style="background:#ffffff; border-radius:16px; overflow:hidden; margin-top:30px;">
 
-                        <tr>
-                            <td style="padding: 0 50px 60px 50px;">
-                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-top: 1px solid #f1f5f9; padding-top: 40px;">
-                                    <tr>
-                                        <td align="center">
-                                            <p style="font-size: 14px; color: #94a3b8; margin-bottom: 20px; font-style: italic;">
-                                                "Knowledge is the only asset that grows when shared."
-                                            </p>
-                                            <a href="#" style="background-color: #0f172a; color: #ffffff; padding: 18px 35px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; display: inline-block;">
-                                                Mark Lesson as Learned
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+        <!-- HERO -->
+        <tr>
+        <td style="background:#FDF4EE; padding:50px;">
+            <div style="font-size:11px; letter-spacing:2px; color:#8C3A14; margin-bottom:15px;">
+                ● DAILY KNOWLEDGE RECAP
+            </div>
 
-                    <table width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin-top: 30px;">
-                        <tr>
-                            <td align="center" style="color: #94a3b8; font-size: 12px;">
-                                <p style="margin: 5px 0;">Sent with ❤️ from Daily Knowledge</p>
-                                <p style="margin: 5px 0;">
-                                    <a href="#" style="color: #6366f1; text-decoration: none;">Profile</a> &nbsp;•&nbsp; 
-                                    <a href="#" style="color: #6366f1; text-decoration: none;">Preferences</a> &nbsp;•&nbsp; 
-                                    <a href="#" style="color: #6366f1; text-decoration: none;">Unsubscribe</a>
-                                </p>
-                            </td>
-                        </tr>
-                    </table>
+            <h1 style="font-family:Georgia, serif; font-size:38px; margin:0; color:#1A1410;">
+                {title}
+            </h1>
 
-                </td>
-            </tr>
-        </table>
+            <p style="font-size:13px; color:#7A6A58; margin-top:10px;">
+                {total_days - day_num} lessons remaining
+            </p>
+        </td>
+        </tr>
+
+        <!-- PROGRESS -->
+        <tr>
+        <td style="padding:20px 50px;">
+            <div style="height:6px; background:#eee; border-radius:3px;">
+                <div style="width:{progress}%; height:6px; background:#D4622A;"></div>
+            </div>
+            <p style="font-size:12px; color:#7A6A58;">Day {day_num} of {total_days}</p>
+        </td>
+        </tr>
+
+        <!-- BODY -->
+        <tr>
+        <td style="padding:40px 50px; color:#3D3028; font-size:16px; line-height:1.8;">
+            {html_body}
+        </td>
+        </tr>
+
+        <!-- CTA -->
+        <tr>
+        <td align="center" style="padding:30px;">
+            <a href="#" style="background:#1A1410; color:white; padding:14px 28px; 
+            border-radius:8px; text-decoration:none; font-size:14px;">
+            Mark as Learned ✓
+            </a>
+        </td>
+        </tr>
+
+    </table>
+
+    <!-- FOOTER -->
+    <table width="600" cellpadding="0" cellspacing="0" style="margin-top:20px;">
+        <tr>
+        <td align="center" style="font-size:12px; color:#7A6A58;">
+            "Knowledge is the only asset that grows when shared."
+        </td>
+        </tr>
+    </table>
+
+    </td>
+    </tr>
+    </table>
+
     </body>
     </html>
     """
