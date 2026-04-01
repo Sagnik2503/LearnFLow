@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LearnFlow</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+  <section id="hero-view" class="view active">
+    <div class="bg-mesh"></div>
+    <div class="bg-dots"></div>
+    <div class="bg-shapes">
+      <div class="shape shape-ring"></div>
+      <div class="shape shape-ring shape-ring-sm"></div>
+      <div class="shape shape-cross"></div>
+      <div class="shape shape-cross shape-cross-sm"></div>
+      <div class="shape shape-dots"></div>
+      <div class="shape shape-line"></div>
+      <div class="shape shape-blob"></div>
+      <div class="shape shape-blob shape-blob-sm"></div>
+    </div>
+    <div class="hero-content">
+      <div class="brand">
+        <div class="brand-icon">L</div>
+        <span class="brand-name">LearnFlow</span>
+      </div>
+
+      <h1 class="hero-heading">
+        Learn anything with <br /><span class="highlight">daily AI lessons</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Enter a topic, get a personalized syllabus and daily email lessons.
+      </p>
+
+      <div class="input-card">
+        <form id="topic-form">
+          <div class="input-group">
+            <label for="topic-input">What do you want to learn?</label>
+            <input id="topic-input" type="text" placeholder="e.g. Machine Learning, Guitar, Spanish" required />
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label for="email-input">Email</label>
+              <input id="email-input" type="email" placeholder="you@example.com" required />
+            </div>
+            <div class="input-group">
+              <label for="name-input">Name <span style="opacity:0.5">(optional)</span></label>
+              <input id="name-input" type="text" placeholder="Your name" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-generate" id="generate-btn">
+            <span id="btn-text">Generate Learning Path</span>
+            <span class="shimmer" id="btn-shimmer" style="display:none;"></span>
+          </button>
+        </form>
+      </div>
+
+      <div class="features-strip">
+        <div class="feature-item"><span class="dot"></span>AI syllabus</div>
+        <div class="feature-item"><span class="dot"></span>Daily lessons</div>
+        <div class="feature-item"><span class="dot"></span>Research-backed</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="loading-view" class="view">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">
+      <h2 id="loading-topic-label">Designing your syllabus…</h2>
+      <p>This takes about 15–30 seconds</p>
+    </div>
+    <div class="loading-steps">
+      <div class="loading-step" id="step-analyze"><span class="step-icon">○</span>Analyzing topic complexity</div>
+      <div class="loading-step" id="step-structure"><span class="step-icon">○</span>Structuring learning path</div>
+      <div class="loading-step" id="step-generate"><span class="step-icon">○</span>Generating daily lessons</div>
+      <div class="loading-step" id="step-save"><span class="step-icon">○</span>Saving your progress</div>
+    </div>
+  </section>
+
+  <section id="syllabus-view" class="view">
+    <div class="syllabus-header">
+      <button class="back-btn" id="back-to-hero">← Back</button>
+      <div><span class="topic-badge" id="syllabus-topic-badge"></span></div>
+      <h1 id="syllabus-title"></h1>
+      <p class="meta"><span id="syllabus-days-count"></span> days · Daily lessons sent to <span id="syllabus-user-email"></span></p>
+    </div>
+    <div class="timeline" id="syllabus-timeline"></div>
+  </section>
+
+  <section id="newsletter-view" class="view">
+    <div class="newsletter-header">
+      <button class="back-btn" id="back-to-syllabus">← Back to Syllabus</button>
+    </div>
+    <div class="newsletter-content">
+      <div class="newsletter-body" id="newsletter-body"></div>
+    </div>
+  </section>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
