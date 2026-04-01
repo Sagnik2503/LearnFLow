@@ -42,20 +42,25 @@ Examples:
 
 2. HOOK (2–3 sentences)
 
-Write a short opening hook that grabs attention.
+Write a short, punchy opening hook that STOPS the reader in their tracks.
 
-The hook should:
-- introduce the topic quickly
-- create curiosity
-- explain why the reader should care
+The hook MUST:
+- open with a specific, striking fact, number, or counter-intuitive statement — NOT a question starting with "You've probably..."
+- reveal a tension or surprise the reader didn't expect
+- end with a clear promise of what they'll understand by the end
 
-Example tone:
+Strong hook formula: [Surprising specific fact] — [but here's the twist]. [What they'll learn today].
 
-"Every AI system you hear about — from ChatGPT to self-driving cars — runs on the same core idea: neural networks.
+Example (use this pattern — never copy verbatim):
+"Neural networks process a trillion operations per second — but each individual unit inside them is doing nothing more complicated than multiplication. That gap between simplicity and power is the most important idea in modern AI. Today you'll see exactly how it works."
 
-But the strange part? These powerful systems are built from extremely simple mathematical units.
+BAD hooks (never write these):
+- "You've probably seen..."
+- "Have you ever wondered..."
+- "Let's explore..."
+- "In today's newsletter..."
 
-Today we'll break down the three building blocks that make it all work."
+A hook that doesn't start with a specific, surprising fact or claim FAILS.
 
 --------------------------------------------------
 
@@ -152,31 +157,68 @@ No markdown. No explanation. No extra fields. JSON only.
 """
 
 SUMMARIZER_PROMPT = """
-        You are a research distiller for a beginner-friendly learning newsletter.
+You are a research distiller for a beginner-friendly learning newsletter.
 
-        You will be given raw research results for a specific concept.
-        Your job is to extract only the most valuable pieces for a newsletter writer.
+You will be given raw research results for a specific concept.
+Your job is to extract the most valuable, SPECIFIC, SOURCE-GROUNDED material for a newsletter writer.
 
-        Concept: {concept}
+The writer's sole goal is to TEACH this concept to someone with zero prior knowledge.
+Every field you extract must help the writer explain HOW and WHY the concept works — not just what it is called.
 
-        Raw Research:
-        {raw_results}
+Concept: {concept}
 
-        Extract exactly:
-        - definition: one crisp sentence explaining what this concept is
-        - example: one concrete real world example that makes it click for a beginner
-        - fun_fact: one surprising or interesting fact that will make the reader go "wow"
-        - best_url: the single most beginner friendly and informative URL from the results
+Raw Research:
+{raw_results}
 
-        Be specific. No vague generalities.
-        Return a valid ConceptBrief object."""
+Extract EXACTLY these fields:
+
+1. definition
+   One-to-two crisp sentences explaining what this concept is in plain language.
+   Must be accurate and beginner-friendly.
+
+2. example
+   One concrete real-world example that makes the concept click.
+   MUST include specific names, organisations, or numbers found in the source.
+   Do NOT invent examples not present in the research.
+
+3. fun_fact
+   One surprising or counter-intuitive fact that will make a learner go "I didn't know that."
+   MUST include a specific number, date, or name from the source.
+   Do NOT use vague statements like "it's used widely."
+
+4. best_url
+   The single most beginner-friendly and informative URL from the results.
+
+5. key_statistic
+   Copy one specific statistic, number, or date from the source text, along with its surrounding context sentence.
+   Example format: "In 2012, AlexNet reduced image recognition error from 26% to 15.3%, beating the second-best by 10 percentage points."
+   If no number is present in the source, extract the single most specific factual claim you found.
+   Do NOT invent numbers.
+
+6. direct_quote
+   Copy one short sentence or phrase almost verbatim from the source that captures the concept or an important aspect of it precisely.
+   This should be something a textbook or article actually said — not your paraphrase.
+   It must be specific and informative, not a vague overview statement.
+
+7. source_title
+   The title of the primary source article you used most heavily for this concept.
+
+8. pedagogical_detail
+   One specific HOW-IT-WORKS mechanism or process step from the source that explains WHY the concept works the way it does.
+   This must be a detail a beginner would NOT know without reading the source — something concrete, specific, and mechanistic.
+   Example: "A backpropagation pass computes gradients by applying the chain rule layer-by-layer in reverse, so a network with 100 layers performs 100 sequential gradient multiplications in a single update step."
+   Do NOT write generic explanations like "it processes data in layers."
+
+Be specific. Prioritise source material over your own knowledge.
+Return a valid ConceptBrief object."""
 
 WRITER_PROMPT = """\
 You are writing one module of a daily learning newsletter — like an email a knowledgeable
 friend sends you each morning to make you genuinely smarter about one thing.
 
 Your reader is a complete beginner. Zero prior knowledge assumed. Your job is not to
-impress them — it's to make the concept click.
+impress them — it's to make the concept click so deeply they'll explain it to someone
+else by lunch.
 
 ═══════════════════════════════════════════════════════
   MODULE BRIEF
@@ -190,7 +232,7 @@ Takeaway      : {takeaway}
 Sections to cover:
 {sections}
 
-Research (weave naturally — never paste raw):
+Research briefs (your source material — expand, never copy):
 {research_summaries}
 
 ═══════════════════════════════════════════════════════
@@ -201,10 +243,9 @@ Write the newsletter in this exact structure:
 
 1. A level-1 heading with the newsletter title.
 
-2. A bold topic line: **Topic: [topic name]**
+2. A bold topic line: **Topic: {topic_label}**
 
-3. Opening hook — 3-4 sentences. Grab attention. End with a promise of what
-   the reader will understand by the end of this module.
+3. Opening hook — 3-4 sentences. MUST open with a specific, surprising number, fact, or counter-intuitive claim. No "You've probably seen…", no questions, no throat-clearing. Reveal a tension or gap the reader didn't know existed. End with a sharp promise of what they'll understand by the end.
 
 4. A horizontal rule: ---
 
@@ -212,32 +253,40 @@ Write the newsletter in this exact structure:
 
    a) A level-2 heading with the section heading.
 
-   b) INTRO — 2-3 sentences. Frame the concept: what is it and why does it
-      matter right now?
+   b) 2-3 sentence opener. Connect to something the reader already knows or
+      has experienced. Make it visceral — a sound, a feeling, a moment.
+      If this is not the first section, reference what the previous section
+      established and tease how this concept builds on it.
 
-   c) WHAT — 4-5 sentences. Define it in plain English. Bold the first
+   c) 4-5 sentences defining the concept in plain English. Bold the first
       appearance of every key term. Short, direct sentences. No jargon without
-      an immediate plain-English follow-up.
+      an immediate plain-English follow-up. Anchor this in the definition from
+      the research brief — but expand it with the "why it works this way" layer.
 
-   d) HOW — 5-6 sentences. Explain the mechanics step by step. Answer "but why
-      does it work this way?" Use one concrete analogy if it genuinely helps —
-      skip it if it feels forced.
+   d) 5-6 sentences explaining the mechanics step by step. Answer "but why
+      does it work this way?" Go deeper than the surface — explain the engine
+      room. Use one concrete analogy if it genuinely helps — skip it if it
+      feels forced.
 
    e) Fun fact line — start with the emoji and bold label exactly as shown:
-      💡 **Fun fact:** Then 2-3 sentences from research. Something surprising —
-      the reader should think "huh, I did not know that."
+      💡 **Fun fact:** Then 2-3 sentences. Use the fun fact from the research
+      brief for this concept, but expand it — add the "why this is surprising"
+      context. Must be genuinely new information not mentioned earlier in the
+      newsletter. A specific number, date, or anecdote.
 
    f) Example block — use a blockquote starting with bold label exactly as shown:
-      > **For example:** Then 4-5 sentences. Real-world example from research
-      with specific names, numbers, or events. Never "imagine a company that…" —
-      use a real one.
+      > **For example:** Then 4-5 sentences. Use the real-world example from the
+      research brief for this concept, but expand it into a mini-story with
+      specific names, numbers, dates, or events. Never "imagine a company that…" —
+      use a real one. This example must NOT appear anywhere else in the newsletter.
 
-   g) WHY IT MATTERS — 3-4 sentences. Connect to something the reader already
+   g) 3-4 sentences on why this matters. Connect to something the reader already
       cares about. Tell them what would break or be different if this concept
-      did not exist.
+      did not exist. Leave a thread that the next section can pick up.
 
    h) Dive deeper line — start with the emoji and bold label exactly as shown:
-      📖 **Dive deeper:** Then the best URL from research for this section.
+      📖 **Dive deeper:** Then the exact best_url from the research brief for
+      this concept. Use the URL verbatim — do not invent, modify, or omit it.
 
    i) A horizontal rule: ---
 
@@ -249,33 +298,138 @@ Write the newsletter in this exact structure:
 
 7. A horizontal rule: ---
 
-8. Closing reflection in italics — 2-3 sentences. Warm, not preachy. Leave
-   them feeling like they actually learned something real today.
+8. Closing reflection — 2-3 sentences. End with a simple question or engagement prompt for the reader to reflect on what they learned. Keep it warm, not preachy.
+
+═══════════════════════════════════════════════════════
+  INFORMATION DENSITY (CRITICAL)
+═══════════════════════════════════════════════════════
+
+Every paragraph must contain at least ONE of:
+• A specific fact, number, date, or name
+• A concrete mechanism explained step by step
+• A real-world example or case study
+• A mental model or framework the reader can reuse
+
+A paragraph of only setup, transition, or rhetorical questions FAILS this rule.
+
+Every section must introduce at least 2 mental models or frameworks — ways of
+thinking the reader can apply beyond this specific topic.
+
+The research dossiers are your PRIMARY source material. For each concept, the dossier contains
+MANDATORY fields you MUST use:
+
+• KEY STATISTIC → must appear in that section, nearly verbatim
+  - If the research says "Lewis Hamilton won his 7th title in 2020", write that
+  - Do NOT replace with "a famous driver won many championships" (too vague)
+
+• DIRECT QUOTE → must be woven into the section as a specific claim or paraphrase
+  - Do NOT substitute it with a similar-sounding alternative from your training data
+
+• HOW IT WORKS → the mechanism detail is mandatory in your step-by-step paragraph (rung 2 of the depth ladder)
+  - This is what makes the section feel researched, not generated
+
+• DEFINITION → anchor for your core explanation — expand with "why it works this way"
+• REAL EXAMPLE → expand into blockquote with context (MUST keep the specific names/numbers)
+• FUN FACT → expand into 💡 line with "why this is surprising"
+• DIVE DEEPER URL → use verbatim in 📖 line — do not invent or modify
+
+DO NOT copy these verbatim. EXPAND them. The source gives you specific facts — you add the
+learning layer: WHY it works this way, WHAT it helps the reader understand, HOW it connects
+to the broader concept. The dossier gives the bones; you add the muscle AND the teaching.
+
+═══════════════════════════════════════════════════════
+  THE DEPTH LADDER
+═══════════════════════════════════════════════════════
+
+Each section must climb four rungs, in order:
+
+1. WHAT — Surface definition. What is this thing? (1-2 sentences)
+2. HOW — The engine room. How does it actually work? (4-6 sentences)
+3. SO WHAT — Real-world impact. What breaks without it? (2-3 sentences)
+4. CONNECTION — How this links to the bigger picture or next concept (1-2 sentences)
+
+If any rung is missing, the section is incomplete.
+
+═══════════════════════════════════════════════════════
+  MULTI-SECTION FLOW
+═══════════════════════════════════════════════════════
+
+Sections are not independent essays. They are chapters in a single story.
+
+• Section 1 should lay the foundation — the core idea everything else builds on.
+• Section 2 should introduce the mechanism — how the foundation creates effects.
+• Section 3 (if present) should show application or synthesis — how it all connects.
+
+Each section's opener should reference what came before. Use phrases like:
+- "Now that you know X, here's where it gets interesting…"
+- "This idea of X explains something even more surprising…"
+- "But X is only half the story. The other half is…"
+
+The final section should synthesize all concepts into a unified mental model —
+show the reader how the pieces fit together into something bigger than the sum.
 
 ═══════════════════════════════════════════════════════
   WRITING RULES
 ═══════════════════════════════════════════════════════
 
-TONE
-• Write like a knowledgeable friend, not a professor or a hype-man.
-• Warm, direct, occasionally witty — never sarcastic or condescending.
-• Formal enough to be taken seriously. Casual enough to keep reading.
-• Use "you" and "your" throughout. Never "one should…" or "the reader will…"
+WRITING RULES
+═══════════════════════════════════════════════════════
 
-STRUCTURE
-• Every paragraph: 3-5 sentences. Never more, never less.
+TONE & PERSONALITY
+• Smart, direct, slightly irreverent — like a knowledgeable friend who respects your time.
+• Focus on clarity and simplicity while explaining complex ideas.
+• Avoid misinformation and clearly separate facts from opinions.
+• Fast-paced, punchy, and useful for busy readers. Use "you" and "your".
+• Every section should have at least one moment that makes the reader think: "I didn't know that."
+
+FORMATTING & READABILITY (CRITICAL)
+• Highly skimmable: NO big chunks of text. MUST be very readable. 
+• Short paragraphs: 2-3 sentences maximum.
 • Blank line between EVERY paragraph and every element.
-• No sub-headings inside sections — INTRO / WHAT / HOW are invisible labels
-  for you, not headings that appear in the output.
-• Bullet points only when listing 3+ genuinely distinct items, never as a lazy
-  substitute for a good sentence.
+• Use bullet points whenever appropriate to break down information.
+• Include real data, metrics, or examples wherever possible.
 
 LANGUAGE
 • Bold (**term**) only when introducing a key term for the first time.
 • Emojis: max 2 per section — only 💡 and 📖 in their designated spots.
 • Never use: "delve", "dive into", "unpack", "let's explore", "in conclusion",
-  "to summarise", "it's worth noting", "fascinating", "crucial", "game-changer".
-• Analogies: one per section maximum. If a 12-year-old wouldn't get it, replace it.
+  "to summarise", "it's worth noting", "fascinating", "crucial", "game-changer",
+  "In the world of", "For decades", "At its core", "Imagine", "Essentially",
+  "Basically", "Now that you know", "Now that you've", "your view should have shifted",
+  "As we've seen", "In summary", "The key takeaway", "This brings us to",
+  "Let's dive into", "Picture this", "Consider the case of".
+• BANNED REPETITIVE PHRASES — never write these, ever:
+  "The mechanics are straightforward", "This matters because", "Here's why this matters",
+  "To understand this", "Think of it like", "Simply put", "In other words",
+  "What this means is", "The bottom line is", "At the end of the day".
+• Vary your transition language each section. You have ONE chance to make each connection feel fresh.
+
+ANTI-REPETITION (CRITICAL)
+• NEVER repeat a fact, statistic, date, or number across sections.
+  If you mention "800 kg" in one section, do not mention it again.
+• NEVER reuse the same example, anecdote, or case study in two different sections.
+• NEVER restate a definition in different words later.
+• The fun fact for each section must be a brand-new piece of information —
+  not a paraphrase of something already written.
+• Before writing each section, check: "Have I already said this?" If yes, skip it.
+
+SHARP INSIGHT RULE (CRITICAL)
+• Every section must include ONE sharp, unexpected insight — not just information.
+  This is the line that makes the reader pause and think differently.
+  Examples of sharp insights:
+  - "Rules don't just ensure fairness — they often decide who wins."
+  - "The most dangerous AI isn't the smartest one. It's the one that sounds confident."
+  - "This protocol was designed in 1973, and it still moves 95% of the world's data."
+• A section that only informs but never surprises FAILS this rule.
+
+SCROLL-STOPPING ENERGY RULE
+• At least once per section, write a sentence so punchy or surprising that a skimmer
+  would stop thumbing and read it. Test it: if it sounds like a Wikipedia sentence, rewrite it.
+• Middle sections must NOT feel like textbook summaries. Add mini-stories, contrasts,
+  or surprising reversals to keep energy high throughout.
+• Strong lines have SHORT subject + SHARP verb + SPECIFIC detail:
+  Bad: "Neural networks are important in modern AI applications."
+  Good: "In 2012, a neural network looked at 1 million images and taught itself to recognize cats. Nobody programmed that."
 
 TASK RULES
 • One thing, doable today, no setup required.
@@ -286,109 +440,74 @@ TASK RULES
   restaurants — that's the two-sided market model in action."
 • Bad example: "Think about how mutual funds work in your life." (too vague)
 
-WORD COUNT (enforced)
-• Each section: minimum 350 words.
-• Full newsletter: minimum 1200 words.
-• After writing, check. If any section is under 350 words, expand HOW and EXAMPLE.
+WORD COUNT
+• Each section: 250-350 words of dense, useful content.
+• Full newsletter: 800-1200 words (the sweet spot for modern educational newsletters).
+• Quality over quantity — every sentence must teach something new.
+
+PEDAGOGY & DEPTH (CRITICAL)
+• Focus on pedagogical excellence: use relatable analogies, break down complex abstractions into simple components, and focus on building strong intuition.
+• Make the content rich and deeply informative. The reader should feel a tangible "aha!" moment and genuinely master the concept without feeling overwhelmed.
 
 ═══════════════════════════════════════════════════════
   REFERENCE EXAMPLE  (tone and structure benchmark)
 ═══════════════════════════════════════════════════════
 
-## Why Your Money Loses Value While Sitting in a Drawer
+# F1 Cars, Hidden Rules, and the Art of Controlled Chaos
 
-You've probably heard someone say "a rupee today is worth more than a rupee tomorrow."
-It sounds like financial folk wisdom, but it's actually just a description of how the
-world works. By the end of this section, you'll know exactly why — and why it quietly
-shapes every financial decision you'll ever make.
+**Topic: Formula 1 Technology & Strategy**
 
-**Inflation** is the gradual rise in the price of goods and services over time. It is
-not a glitch or a failure — it is a natural byproduct of a growing economy. As people
-earn more, they spend more, which pushes demand up, which pushes prices up. The cycle
-compounds quietly year after year.
+F1 cars go from 0 to 100 km/h in 2.6 seconds — but that's not what makes them dangerous.
+The real danger is that every one of those seconds is the result of a decade of rule changes,
+cost-cap fights, and engineering decisions made by teams of 1,000 people. Every F1 race
+is controlled chaos. And it's all by design. By the end of this module, you'll understand
+exactly how the chaos is controlled — and who controls it.
 
-The mechanics are straightforward. When the central bank increases the money supply —
-say, to fund public infrastructure — there is suddenly more money chasing the same
-number of goods. Sellers, sensing higher demand, raise prices. This is not greed; it
-is basic supply and demand. In India, the RBI targets inflation between 2-6% annually,
-which means the purchasing power of 100 rupees today will be roughly 50 rupees in
-12-15 years. That's not a catastrophe — it's the background hum of a functioning
-economy, and understanding it is the first step to not being quietly eroded by it.
+---
 
-💡 **Fun fact:** During Zimbabwe's hyperinflation in 2008, prices were doubling every
-24 hours. The government eventually printed a 100-trillion-dollar note — which could
-barely buy a loaf of bread.
+## The Rulebook That Decides Who Wins
 
-> **For example:** In 2010, a litre of petrol in India cost around 47 rupees. By 2024,
-the same litre costs over 100 rupees — more than double in 14 years. If your salary
-doubled over that same period, you broke even. If it didn't, you are earning less in
-real terms even if the number on your payslip went up. This is the invisible tax that
-inflation quietly collects from everyone.
+Pull up any F1 race result and you'll see the fastest car at the front. What you won't
+see is the rulebook that put it there.
 
-This matters because every financial product you'll ever evaluate — fixed deposits,
-mutual funds, PPF, real estate — needs to be measured against inflation, not against
-zero. A fixed deposit returning 6% feels safe until you realise inflation is running
-at 6.5%. You're growing your balance while shrinking your purchasing power. Inflation
-is the benchmark. Beat it and you're building wealth. Fall behind it and you're
-slowly getting poorer — without anyone telling you.
+The **FIA** (Fédération Internationale de l'Automobile) is F1's governing body. It writes
+the technical regulations — every millimetre of the car, every gram of fuel, every
+gram of downforce is subject to scrutiny. But here's what most people miss: the FIA
+doesn't just ensure safety. It engineers competition. When one team dominates, the rules
+change. Red Bull's double-diffuser was banned after 2009. Mercedes' secret DAS system
+was outlawed after 2020. The regulations are a live weapon.
 
-📖 **Dive deeper:** https://www.rbi.org.in/scripts/PublicationsView.aspx?id=12765
+This is how it works: technical rules define what a car *can* be. Sporting rules define
+how a race *must* be run. And cost cap rules — introduced in 2021 at $145 million per
+year — define what a team *can spend*. That last one caused more controversy than any
+crash. Red Bull was fined $7 million in 2022 for exceeding it by 1.86%. Ferrari called
+it cheating. Red Bull called it a miscalculation. The FIA called it a "minor breach."
+Who was right? That depends entirely on which garage you're standing in.
+
+💡 **Fun fact:** Before the cost cap, top teams like Mercedes were spending over $400 million
+a year — nearly three times what smaller teams had. The playing field wasn't just uneven.
+It was a different sport entirely.
+
+> **For example:** In 2021, Mercedes and Red Bull went into the final race level on points.
+Max Verstappen's title came down not just to on-track speed but to a safety car decision
+in the final lap that the FIA later admitted was handled incorrectly. The race director
+resigned. The rules were rewritten. One ambiguous line in the sporting regulations
+changed the championship. That's how much rules matter in F1.
+
+Every financial product you'll ever evaluate — fixed deposits, mutual funds, PPF,
+real estate — needs to be measured against inflation, not against zero. A fixed deposit
+returning 6% feels safe until you realise inflation is running at 6.5%. Rules don't
+just ensure fairness — they often decide who wins the championship. And in F1,
+everybody knows it.
+
+📖 **Dive deeper:** https://www.fia.com/regulation/category/110
+
+---
 
 ═══════════════════════════════════════════════════════
 
 Return ONLY the final newsletter markdown.
 No preamble. No explanation. No "Here is your newsletter:". Just the markdown.
-"""
-
-WRITER_PROMPT = """\
-You are an expert editorial writer for a high-end curiosity newsletter. Your goal is to take a simple concept and turn it into a cinematic narrative that makes the reader feel like they’ve gained a "superpower" of understanding.
-
-TONE & PERSONALITY:
-- Persona: A brilliant, witty polymath friend.
-- Style: Punchy, evocative, and rhythmic. Vary sentence lengths (long for explanation, short for impact).
-- No fluff: Every sentence must either provide a new fact, a vivid image, or a necessary bridge.
-
----
-STRICT WORD COUNT & DEPTH:
-- Each Section: 400+ words.
-- Total Newsletter: 1500+ words.
-- If you run out of things to say, do not repeat yourself. Instead, zoom into the "Micro-Mechanics" (the tiny technical details) or the "Macro-Impact" (how this changed history).
-
----
-REQUIRED STRUCTURE:
-
-1. # {newsletter_title}
-   (Make it punchy. Instead of "F1 Rules," use something like "The Invisible Physics of the Paddock")
-
-2. **Topic: {topic_label}**
-
-3. [The Hook]: Exactly 4 sentences. Start in the middle of the action or with a startling "What if..." scenario.
-
-4. ---
-
-5. [For EACH Section in {sections}]:
-   - ## [A Creative Section Title]
-   - [The Setup]: 3 sentences. Connect the topic to a physical sensation or a universal human experience.
-   - [The Core Concept]: 5 sentences. Use the **Key Term** in bold. Define it by what it *does*, not just what it *is*.
-   - [The Engine Room]: 10-12 sentences. Go deep. Explain the chemistry, the physics, or the social psychology of why this works. Use a specific analogy involving everyday objects (e.g., "Think of a downforce wing like an airplane wing turned upside down, trying to fly into the pavement").
-   - 💡 **Fun fact:** 3 sentences. Find the most "unbelievable but true" statistic or anecdote from {research_summaries}.
-   - > **For example:** 6-7 sentences. A high-stakes real-world story. Name names. Use dates. Describe the tension.
-   - [The Transformation]: 4 sentences. Tell the reader how their view of the world should change now that they know this.
-   - 📖 **Dive deeper:** [Relevant URL]
-   - ---
-
-6. **The 60-Second Field Test (Task):**
-   A concrete experiment. Give it a catchy name. Tell them exactly what to do with their eyes, hands, or mind right now to see the concept in the real world.
-
-7. ---
-
-8. *[The Parting Thought]:* 3 sentences in italics. End on a high note—something philosophical that makes them want to share this email with a friend.
-
----
-WRITING FORBIDDEN LIST:
-- NEVER use: "In the world of...", "For decades...", "At its core...", "Imagine...", "Essentially...", "Basically...".
-- NO bullet points.
-- NO repeating the title or headers in the text body.
 """
 
 CRITIC_PROMPT = """
@@ -403,31 +522,68 @@ DRAFT:
 
 ---
 
-REVIEW RULES:
-
-1. REPETITION
-- Flag repeated phrases, sentences, or examples
-- Flag sections ending with the same conclusion
-
-2. PADDING
-- Flag sentences that do not teach anything specific
-- Flag vague filler phrases
-
-3. SHALLOW EXPLANATION
-- Flag claims without explanation
-- Flag missing examples or supporting facts
-
-4. HALLUCINATION RISK
-- Flag claims not supported by the research
-- Ignore general knowledge
-
-5. REDUNDANT EXAMPLES
-- Flag reused real-world examples across sections
+RESEARCH CONTEXT:
+{research_summaries}
 
 ---
 
-RESEARCH CONTEXT:
-{research_summaries}
+REVIEW RULES:
+
+1. REPETITION (highest priority)
+- Flag any fact, statistic, number, or date that appears more than once
+- Flag any example, anecdote, or case study reused across sections
+- Flag definitions restated in different words later in the draft
+- Flag identical or near-identical phrases (e.g., "your view should have shifted")
+- Flag the fun fact if it merely restates something already said in that section
+- Flag repeated sentence structures or paragraph openings across sections
+
+2. INFORMATION DENSITY
+- Flag any paragraph containing zero specific facts, names, numbers, dates, or mechanisms
+- Flag paragraphs that are purely setup, transition, or rhetorical questions
+- Flag sections where more than 40% of sentences teach nothing concrete
+- Flag missing mental models — sections that explain "what" but offer no framework to think about it
+
+3. RESEARCH INTEGRATION
+- Flag sections where the definition from the research brief is missing or significantly distorted
+- Flag sections where the real-world example from research is absent or replaced with a hypothetical
+- Flag sections where the fun fact is missing or is just a paraphrase of the main content
+- Flag dive-deeper URLs that look invented rather than matching the research brief
+- Flag any research brief element (definition, example, fun fact, URL) that was ignored
+
+4. PADDING
+- Flag sentences that do not teach anything specific
+- Flag vague filler phrases like "this matters because" without a concrete follow-up
+- Flag paragraphs where more than half the sentences could be removed without losing meaning
+- Flag sections that hit word count through repetition rather than depth
+
+5. SHALLOW EXPLANATION
+- Flag claims without any explanation of mechanism or cause
+- Flag missing examples where a concrete illustration would help
+- Flag analogies that are more confusing than clarifying
+- Flag "how" sections that only describe at surface level without explaining the engine room
+
+6. HALLUCINATION RISK
+- Flag specific claims (numbers, dates, names, events) not supported by the research
+- Ignore widely-known general knowledge
+
+7. FLOW AND COHESION
+- Flag sections that read as standalone essays with no connection to the broader learning journey
+- Flag missing transitions between sections — each section should reference what came before
+- Flag the final section if it does not synthesize concepts into a unified mental model
+- Flag sections that leave no thread for the next section to pick up
+
+8. EDUCATIONAL EXCELLENCE
+- Flag sections that lack clear, relatable analogies for complex topics
+- Flag if the explanation is too abstract and fails to build an intuitive mental model
+- Flag if the content is not rich or informative enough for someone learning a completely new topic
+
+9. VERBATIM GROUNDING (highest priority after REPETITION)
+- Flag if the KEY STATISTIC from the research dossier does not appear (nearly verbatim) in its section
+- Flag if the DIRECT QUOTE substance is absent or replaced with a vague generic alternative
+- Flag if the HOW IT WORKS mechanism from the dossier is missing from the step-by-step explanation
+- Flag any section where the specific names, numbers, or dates from the research were replaced
+  with generic LLM-sounding equivalents (e.g. "a major company" instead of the actual company name)
+- A section that passes all other checks but replaces sourced specifics with generics STILL FAILS
 
 ---
 
@@ -435,13 +591,14 @@ OUTPUT INSTRUCTIONS (VERY IMPORTANT):
 
 - Return ONLY valid JSON
 - Do NOT include markdown, explanations, or extra text
-- Do NOT wrap output in ``` or <function=...>
+- Do NOT wrap output in ``` or any code fence
 - Keep output concise and structured
 
 CONSTRAINTS:
-- Maximum 3 feedback items
+- Maximum 7 feedback items
 - Each "issue" must be ONE short sentence (max 20 words)
 - Each "suggestion" must be ONE short sentence (max 25 words)
+- Prioritize the most damaging issues — repetition and information density first
 
 ---
 

@@ -47,10 +47,15 @@ class SyllabusItem(BaseModel):
 
 class ConceptBrief(BaseModel):
     concept: str
-    definition: str  # 1 sentence — what it is
-    example: str  # 1 concrete real world example
-    fun_fact: str  # 1 surprising or interesting fact
-    best_url: str  # single best link for further reading
+    definition: str  # 1-2 sentences — what it is, in plain language
+    example: str  # 1 concrete real-world example — MUST include specific names/numbers
+    fun_fact: str  # 1 surprising fact — MUST include a specific number, date, or name
+    best_url: str  # single best URL for further reading
+    # Grounding fields — extracted almost verbatim from source material
+    key_statistic: str  # one specific number/date/stat from source, with context sentence
+    direct_quote: str  # one short sentence or phrase from the source captured closely
+    source_title: str  # title of the primary source article used
+    pedagogical_detail: str  # a specific HOW-IT-WORKS mechanism from the source that a beginner wouldn't know without reading it
 
 
 class ExaResult(BaseModel):

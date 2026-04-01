@@ -1,6 +1,5 @@
-from graphs.newsletter_generator_graph import build_graph
+from graphs.newsletter.graph import build_graph
 
-# ✅ Build once (important)
 newsletter_graph = build_graph()
 
 
@@ -11,17 +10,12 @@ def run_newsletter_graph(
     day: int,
     total_days: int,
 ) -> str:
-    """
-    Executes newsletter graph and returns markdown content
-    """
-
     state = {
         "topic": topic,
         "item": item,
         "previous_topic": previous,
         "day_number": day,
         "total_days": total_days,
-        # 🔽 graph working state
         "plan": None,
         "research": [],
         "research_summary": [],
@@ -30,7 +24,6 @@ def run_newsletter_graph(
         "feedbacks": [],
         "revision_count": 0,
         "approved": False,
-        # 🔽 final output
         "newsletter": "",
     }
 

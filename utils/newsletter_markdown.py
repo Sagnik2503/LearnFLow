@@ -1,4 +1,4 @@
-from graphs.newsletter_generator_graph import build_graph
+from graphs.builder.newsletter_builder import run_newsletter_graph
 
 
 def generate_newsletter_markdown(
@@ -12,22 +12,19 @@ def generate_newsletter_markdown(
     Generate markdown newsletter using your graph.
     """
 
-    # Prepare input for graph
-    graph_input = {
-        "topic": topic,
-        "concepts": concepts,
-        "previous_topic": previous,
+    item = {
         "day": day,
-        "total_days": total_days,
+        "title": topic,
+        "description": "",
+        "concepts": concepts,
     }
 
-    # Call graph
-    result = build_graph.invoke(graph_input)
-
-    # Extract markdown content
-    content = result.get("content")
-
-    if not content:
-        raise ValueError("Newsletter graph did not return content")
+    content = run_newsletter_graph(
+        topic=topic,
+        item=item,
+        previous=previous,
+        day=day,
+        total_days=total_days,
+    )
 
     return content

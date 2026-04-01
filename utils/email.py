@@ -20,75 +20,103 @@ def wrap_email_html(
     return f"""
     <!DOCTYPE html>
     <html>
-    <body style="margin:0; padding:0; background:#f4f1ed; font-family:Arial, sans-serif;">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {{
+                margin: 0; padding: 0; background-color: #f4f1ed;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                -webkit-font-smoothing: antialiased;
+                color: #3d3028;
+            }}
+            .email-wrapper {{ width: 100%; table-layout: fixed; background-color: #f4f1ed; padding-bottom: 40px; }}
+            .email-content {{ max-width: 600px; margin: 0 auto; width: 100%; }}
+            .card {{
+                background-color: #ffffff; border-radius: 12px;
+                overflow: hidden; margin-top: 30px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            }}
+            .hero {{ background-color: #FDF4EE; padding: 40px 50px; text-align: left; }}
+            .hero-label {{ font-size: 12px; font-weight: 600; letter-spacing: 1.5px; color: #D4622A; margin-bottom: 12px; text-transform: uppercase; }}
+            .hero h1 {{ font-family: "Georgia", serif; font-size: 32px; margin: 0; color: #1a1410; line-height: 1.2; }}
+            .hero p {{ font-size: 14px; color: #7a6a58; margin-top: 12px; margin-bottom: 0; }}
+            
+            .progress-container {{ padding: 20px 50px; border-bottom: 1px solid #f4f1ed; }}
+            .progress-bar-bg {{ height: 6px; background-color: #eee; border-radius: 3px; overflow: hidden; }}
+            .progress-bar-fill {{ width: {progress}%; height: 100%; background-color: #D4622A; border-radius: 3px; }}
+            .progress-text {{ font-size: 13px; color: #7a6a58; margin-top: 8px; font-weight: 500; display: block; }}
+            
+            .body-content {{ padding: 40px 50px; }}
+            .body-content h1, .body-content h2, .body-content h3, .body-content h4 {{
+                font-family: "Georgia", serif; color: #1a1410; margin-top: 1.8em; margin-bottom: 0.6em; line-height: 1.3;
+            }}
+            .body-content h2 {{ font-size: 24px; border-bottom: 1px solid #eaeaea; padding-bottom: 8px; }}
+            .body-content h3 {{ font-size: 20px; color: #D4622A; }}
+            .body-content p {{ font-size: 16px; line-height: 1.7; margin-bottom: 1.5em; color: #3d3028; }}
+            .body-content ul, .body-content ol {{ margin-bottom: 1.5em; padding-left: 1.5em; }}
+            .body-content li {{ font-size: 16px; line-height: 1.7; margin-bottom: 0.5em; color: #3d3028; }}
+            .body-content blockquote {{
+                border-left: 4px solid #D4622A; margin: 1.8em 0; padding: 0.8em 1.2em;
+                color: #555; background-color: #fafafa; font-style: italic; border-radius: 0 8px 8px 0;
+            }}
+            .body-content strong {{ color: #1a1410; font-weight: 600; }}
+            .body-content a {{ color: #D4622A; text-decoration: none; font-weight: 500; }}
+            .body-content a:hover {{ text-decoration: underline; }}
+            .body-content hr {{ border: 0; border-top: 1px solid #eaeaea; margin: 2.5em 0; }}
+            .body-content code {{ background-color: #f4f1ed; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: #D4622A; font-family: monospace; }}
+            
+            .cta-section {{ padding: 10px 50px 40px; text-align: center; }}
+            .cta-btn {{
+                background-color: #1a1410; color: #ffffff !important; padding: 14px 28px;
+                border-radius: 8px; text-decoration: none; font-size: 15px; font-weight: 500;
+                display: inline-block;
+            }}
+            
+            .footer {{ text-align: center; margin-top: 24px; padding: 0 20px; }}
+            .footer p {{ font-size: 13px; color: #7a6a58; font-style: italic; margin: 0; }}
+            
+            @media only screen and (max-width: 600px) {{
+                .hero, .progress-container, .body-content, .cta-section {{ padding-left: 20px; padding-right: 20px; }}
+                .hero h1 {{ font-size: 26px; }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="email-wrapper">
+            <div class="email-content">
+                <div class="card">
+                    <!-- HERO -->
+                    <div class="hero">
+                        <div class="hero-label">● DAILY KNOWLEDGE RECAP</div>
+                        <h1>{title}</h1>
+                        <p>{total_days - day_num} lessons remaining</p>
+                    </div>
 
-    <table width="100%" cellpadding="0" cellspacing="0">
-    <tr>
-    <td align="center">
+                    <!-- PROGRESS -->
+                    <div class="progress-container">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill"></div>
+                        </div>
+                        <span class="progress-text">Day {day_num} of {total_days}</span>
+                    </div>
 
-    <!-- MAIN CARD -->
-    <table width="600" cellpadding="0" cellspacing="0" 
-    style="background:#ffffff; border-radius:16px; overflow:hidden; margin-top:30px;">
+                    <!-- BODY -->
+                    <div class="body-content">
+                        {html_body}
+                    </div>
 
-        <!-- HERO -->
-        <tr>
-        <td style="background:#FDF4EE; padding:50px;">
-            <div style="font-size:11px; letter-spacing:2px; color:#8C3A14; margin-bottom:15px;">
-                ● DAILY KNOWLEDGE RECAP
+                    <!-- CTA -->
+                    <div class="cta-section">
+                        <a href="#" class="cta-btn">Mark as Learned ✓</a>
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="footer">
+                    <p>"Knowledge is the only asset that grows when shared."</p>
+                </div>
             </div>
-
-            <h1 style="font-family:Georgia, serif; font-size:38px; margin:0; color:#1A1410;">
-                {title}
-            </h1>
-
-            <p style="font-size:13px; color:#7A6A58; margin-top:10px;">
-                {total_days - day_num} lessons remaining
-            </p>
-        </td>
-        </tr>
-
-        <!-- PROGRESS -->
-        <tr>
-        <td style="padding:20px 50px;">
-            <div style="height:6px; background:#eee; border-radius:3px;">
-                <div style="width:{progress}%; height:6px; background:#D4622A;"></div>
-            </div>
-            <p style="font-size:12px; color:#7A6A58;">Day {day_num} of {total_days}</p>
-        </td>
-        </tr>
-
-        <!-- BODY -->
-        <tr>
-        <td style="padding:40px 50px; color:#3D3028; font-size:16px; line-height:1.8;">
-            {html_body}
-        </td>
-        </tr>
-
-        <!-- CTA -->
-        <tr>
-        <td align="center" style="padding:30px;">
-            <a href="#" style="background:#1A1410; color:white; padding:14px 28px; 
-            border-radius:8px; text-decoration:none; font-size:14px;">
-            Mark as Learned ✓
-            </a>
-        </td>
-        </tr>
-
-    </table>
-
-    <!-- FOOTER -->
-    <table width="600" cellpadding="0" cellspacing="0" style="margin-top:20px;">
-        <tr>
-        <td align="center" style="font-size:12px; color:#7A6A58;">
-            "Knowledge is the only asset that grows when shared."
-        </td>
-        </tr>
-    </table>
-
-    </td>
-    </tr>
-    </table>
-
+        </div>
     </body>
     </html>
     """
