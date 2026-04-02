@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frontend</title>
+</head>
+<body>
+
+<h1>Frontend Page</h1>
+<button onclick="getData()">Get Data</button>
+
+<p id="output"></p>
+
+<script>
+async function getData() {
+    const response = await fetch("http://localhost:8000/api/hello");
+    const data = await response.json();
+    document.getElementById("output").innerText = data.message;
+}
+</script>
+
+</body>
+</html>

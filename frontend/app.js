@@ -8,7 +8,7 @@ const API_BASE = window.location.origin;
 const state = {
   topic: '',
   email: '',
-  name: '',
+  deliveryTime: '09:00',
   trackId: null,
   syllabus: [],
   totalDays: 0,
@@ -347,13 +347,14 @@ async function handleSubmit(e) {
 
   const topicInput = document.getElementById('topic-input');
   const emailInput = document.getElementById('email-input');
-  const nameInput = document.getElementById('name-input');
+  const deliveryTimeInput = document.getElementById('delivery-time-input');
   const btn = document.getElementById('generate-btn');
   const btnText = document.getElementById('btn-text');
   const btnShimmer = document.getElementById('btn-shimmer');
 
   const topic = topicInput.value.trim();
   const email = emailInput.value.trim();
+  const deliveryTime = deliveryTimeInput.value;
 
   if (!topic) {
     showToast('Please enter a topic you want to learn.', 'error');
@@ -368,7 +369,7 @@ async function handleSubmit(e) {
 
   state.topic = topic;
   state.email = email;
-  state.name = nameInput.value.trim();
+  state.deliveryTime = deliveryTime;
 
   // Show loading view
   showView('loading-view');
@@ -380,15 +381,15 @@ async function handleSubmit(e) {
   btnShimmer.style.display = 'block';
 
   try {
-    const res = await fetch(`${API_BASE}/api/generate-syllabus`, {
+    const res = await fetch(`${API_BASE}/api/subscribe`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic, email }),
+      body: JSON.stringify({ topic, email, delivery_time: deliveryTime }),
     });
 
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.detail || 'Syllabus generation failed');
+      throw new Error(err.detail || 'Subscription failed');
     }
 
     const data = await res.json();
@@ -403,10 +404,17 @@ async function handleSubmit(e) {
       el.querySelector('.step-icon').textContent = '✓';
     });
 
+    // Fetch the full syllabus for display
+    const syllabusRes = await fetch(`${API_BASE}/api/syllabus/${data.track_id}`);
+    if (!syllabusRes.ok) {
+      throw new Error('Failed to fetch syllabus');
+    }
+    const syllabusData = await syllabusRes.json();
+
     // Brief pause for the "all done" feeling
     setTimeout(() => {
-      renderSyllabus(data);
-      showToast(`Syllabus generated: ${data.total_days} days of learning!`, 'success');
+      renderSyllabus(syllabusData);
+      showToast(data.message, 'success');
     }, 800);
 
   } catch (err) {

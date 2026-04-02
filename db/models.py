@@ -40,6 +40,7 @@ class SyllabusItem(Base):
 class User(Base):
     __tablename__ = "users"
     id = Column(String, primary_key=True)
+    email = Column(String, unique=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     tracks = relationship(
@@ -54,6 +55,8 @@ class UserTrack(Base):
     track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
     current_day = Column(Integer, default=1)
     total_days = Column(Integer, nullable=False)
+    delivery_time = Column(String, nullable=False, default="09:00")
+    active = Column(Integer, default=1)
     last_seen = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="tracks")

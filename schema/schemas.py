@@ -1,5 +1,18 @@
 from pydantic import BaseModel, Field
-from typing import List, TypedDict
+from typing import List, TypedDict, Optional
+
+
+class SubscribeRequest(BaseModel):
+    topic: str = Field(description="Topic to learn")
+    email: str = Field(description="Email for daily newsletters")
+    delivery_time: str = Field(default="09:00", description="Time to receive newsletter (HH:MM)")
+
+
+class SubscribeResponse(BaseModel):
+    track_id: int
+    topic: str
+    total_days: int
+    message: str
 
 
 class SyllabusItem(BaseModel):

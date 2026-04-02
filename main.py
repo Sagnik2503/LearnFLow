@@ -4,7 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, EmailStr
 from db.database import init_db, SessionLocal
-from db.crud import get_syllabus, get_track
+from db.crud import get_syllabus, get_track, get_or_create_user, create_subscription, unsubscribe
+from schema.schemas import SubscribeRequest, SubscribeResponse
 from graphs.builder.curriculum_builder import run_curriculum_graph
 
 import os
@@ -56,6 +57,55 @@ async def serve_frontend():
     if os.path.exists(index_path):
         return FileResponse(index_path)
     return {"message": "LearnFlow API is running. Frontend not found."}
+
+
+@app.post("/api/subscribe", response_model=SubscribeResponse)
+async def subscribe(req: SubscribeRequest):
+    """Subscribe to daily newsletters for a topic."""
+    if not req.topic or not req.topic.strip():
+        raise HTTPException(status_code=400, detail="Topic cannot be empty")
+    if not req.email or not req.email.strip():
+        raise HTTPException(status_code=400, detail="Email is required")
+
+    try:
+        result = run_curriculum_graph(req.topic.strip())
+
+        db = SessionLocal()
+        try:
+            user = get_or_create_user(db, req.email.strip())
+            create_subscription(
+                db,
+                user_id=user.id,
+                track_id=result["track_id"],
+                total_days=result["total_days"],
+                delivery_time=req.delivery_time,
+            )
+        finally:
+            db.close()
+
+        return SubscribeResponse(
+            track_id=result["track_id"],
+            topic=result["topic"],
+            total_days=result["total_days"],
+            message=f"Subscribed! You'll receive daily newsletters at {req.delivery_time}",
+        )
+
+    except Exception as e:
+        print(f"❌ Subscription failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/unsubscribe/{user_track_id}")
+async def unsubscribe_endpoint(user_track_id: int):
+    """Unsubscribe from a track."""
+    db = SessionLocal()
+    try:
+        result = unsubscribe(db, user_track_id)
+        if not result:
+            raise HTTPException(status_code=404, detail="Subscription not found")
+        return {"message": "Unsubscribed successfully"}
+    finally:
+        db.close()
 
 
 @app.post("/api/generate-syllabus", response_model=SyllabusResponse)

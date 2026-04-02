@@ -9,12 +9,46 @@ def create_user(db: Session, user_id: str):
     return user
 
 
-def create_user_track(db: Session, user_id: str, track_id: int, total_days: int):
+def get_or_create_user(db: Session, email: str):
+    user = db.query(User).filter(User.email == email).first()
+    if user:
+        return user
+    user = User(id=email, email=email)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def create_subscription(db: Session, user_id: str, track_id: int, total_days: int, delivery_time: str):
     user_track = UserTrack(
         user_id=user_id,
         track_id=track_id,
         current_day=1,
         total_days=total_days,
+        delivery_time=delivery_time,
+    )
+    db.add(user_track)
+    db.commit()
+    db.refresh(user_track)
+    return user_track
+
+
+def get_active_subscriptions(db: Session):
+    return (
+        db.query(UserTrack)
+        .filter(UserTrack.active == 1, UserTrack.current_day <= UserTrack.total_days)
+        .all()
+    )
+
+
+def create_user_track(db: Session, user_id: str, track_id: int, total_days: int, delivery_time: str = "09:00"):
+    user_track = UserTrack(
+        user_id=user_id,
+        track_id=track_id,
+        current_day=1,
+        total_days=total_days,
+        delivery_time=delivery_time,
     )
     db.add(user_track)
     db.commit()
@@ -91,3 +125,12 @@ def get_previous_title(db: Session, track_id: int, current_day: int) -> str | No
         db.query(SyllabusItem).filter_by(track_id=track_id, day=current_day - 1).first()
     )
     return item.title if item else None
+
+
+def unsubscribe(db: Session, user_track_id: int):
+    user_track = db.query(UserTrack).filter(UserTrack.id == user_track_id).first()
+    if user_track:
+        user_track.active = 0
+        db.commit()
+        db.refresh(user_track)
+    return user_track
