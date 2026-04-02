@@ -39,7 +39,7 @@ class SyllabusItem(Base):
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String, unique=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -51,7 +51,7 @@ class User(Base):
 class UserTrack(Base):
     __tablename__ = "user_tracks"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
     current_day = Column(Integer, default=1)
     total_days = Column(Integer, nullable=False)
