@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LearnFlow</title>
-  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="/static/index.css" />
 </head>
 <body>
 
@@ -85,11 +85,22 @@
   <section id="syllabus-view" class="view">
     <div class="syllabus-header">
       <button class="back-btn" id="back-to-hero">← Back</button>
-      <div><span class="topic-badge" id="syllabus-topic-badge"></span></div>
+      <div><span class="topic-badge" id="syllabus-topic-badge"></span><span class="preview-badge">Preview</span></div>
       <h1 id="syllabus-title"></h1>
-      <p class="meta"><span id="syllabus-days-count"></span> days · Daily lessons sent to <span id="syllabus-user-email"></span></p>
+      <p class="meta"><span id="syllabus-days-count"></span> days · Daily lessons at <span id="syllabus-delivery-time"></span></p>
     </div>
-    <div class="timeline" id="syllabus-timeline"></div>
+    <div class="bento-grid" id="syllabus-bento"></div>
+    <div class="subscribe-section" id="subscribe-section">
+      <div class="subscribe-card">
+        <div class="subscribe-info">
+          <h3>Ready to start learning?</h3>
+          <p>Subscribe and receive daily lessons straight to your inbox at <span id="subscribe-time-display"></span></p>
+        </div>
+        <button class="btn-subscribe" id="btn-subscribe">
+          <span id="btn-subscribe-text">Subscribe & Start Learning</span>
+        </button>
+      </div>
+    </div>
   </section>
 
   <section id="newsletter-view" class="view">
@@ -102,7 +113,8 @@
   </section>
 
   <div class="toast-container" id="toast-container"></div>
+  <footer class="site-footer"><span>Built by <a href="https://github.com/Sagnik2503/LearnFLow" target="_blank">Sagnik Sengupta</a></span></footer>
 
-  <script src="app.js"></script>
+  <script src="/static/app.js"></script>
 </body>
 </html>

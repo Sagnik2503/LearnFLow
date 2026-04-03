@@ -3,7 +3,7 @@ from graphs.builder.newsletter_builder import run_newsletter_graph
 from db.crud import (
     create_track,
     save_syllabus,
-    create_user_track,
+    create_subscription,
     get_newsletter,
     get_previous_title,
     create_newsletter,
@@ -17,7 +17,7 @@ from db.models import SyllabusItem
 # -------------------------------
 # START TOPIC
 # -------------------------------
-def start_topic(db: Session, user_id: str, topic: str):
+def start_topic(db: Session, user_id: str, topic: str, delivery_time: str):
     print(f"\n🚀 Starting topic: {topic}")
 
     result = run_curriculum_graph(topic)
@@ -26,7 +26,7 @@ def start_topic(db: Session, user_id: str, topic: str):
 
     print(f"📘 Generated syllabus with {total_days} days (track {track_id})")
 
-    user_track = create_user_track(db, user_id, track_id, total_days)
+    user_track = create_subscription(db, user_id, track_id, total_days, delivery_time)
 
     print(f"✅ UserTrack created (Day 1)")
 

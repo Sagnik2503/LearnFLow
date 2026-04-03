@@ -2,13 +2,15 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from db.database import init_db, SessionLocal
 from db.crud import get_syllabus, get_track, get_or_create_user, create_subscription, unsubscribe
-from schema.schemas import SubscribeRequest, SubscribeResponse
 from graphs.builder.curriculum_builder import run_curriculum_graph
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ── Init ────────────────────────────────────────────
 init_db()
@@ -29,7 +31,46 @@ if os.path.isdir(FRONTEND_DIR):
     app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 
+# ── Routes ─────────────────────────────────────────
+@app.get("/")
+async def serve_frontend():
+    """Serve the frontend index.html"""
+    index_path = os.path.join(FRONTEND_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "LearnFlow API is running. Frontend not found."}
+
+
+@app.get("/index.css")
+async def serve_css():
+    css_path = os.path.join(FRONTEND_DIR, "index.css")
+    if os.path.exists(css_path):
+        return FileResponse(css_path, media_type="text/css")
+    raise HTTPException(status_code=404, detail="CSS file not found")
+
+
+@app.get("/app.js")
+async def serve_js():
+    js_path = os.path.join(FRONTEND_DIR, "app.js")
+    if os.path.exists(js_path):
+        return FileResponse(js_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="JS file not found")
+
+
 # ── Request / Response models ──────────────────────
+class SubscribeRequest(BaseModel):
+    topic: str
+    email: str
+    delivery_time: str
+
+
+class SubscribeResponse(BaseModel):
+    track_id: int
+    topic: str
+    total_days: int
+    message: str
+
+
 class GenerateSyllabusRequest(BaseModel):
     topic: str
     email: str | None = None
@@ -49,14 +90,17 @@ class SyllabusResponse(BaseModel):
     syllabus: list[SyllabusItemResponse]
 
 
-# ── Routes ─────────────────────────────────────────
-@app.get("/")
-async def serve_frontend():
-    """Serve the frontend index.html"""
-    index_path = os.path.join(FRONTEND_DIR, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return {"message": "LearnFlow API is running. Frontend not found."}
+class UnsubscribeResponse(BaseModel):
+    message: str
+
+
+class NewsletterResponse(BaseModel):
+    day: int
+    title: str
+    content: str
+
+
+# ── API Routes ─────────────────────────────────────
 
 
 @app.post("/api/subscribe", response_model=SubscribeResponse)
@@ -95,7 +139,7 @@ async def subscribe(req: SubscribeRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/unsubscribe/{user_track_id}")
+@app.post("/api/unsubscribe/{user_track_id}", response_model=UnsubscribeResponse)
 async def unsubscribe_endpoint(user_track_id: int):
     """Unsubscribe from a track."""
     db = SessionLocal()
@@ -171,7 +215,7 @@ async def get_syllabus_by_track(track_id: int):
         db.close()
 
 
-@app.get("/api/newsletter/{track_id}/{day}")
+@app.get("/api/newsletter/{track_id}/{day}", response_model=NewsletterResponse)
 async def get_newsletter_for_day(track_id: int, day: int):
     """Generate or retrieve a newsletter for a specific day of a track."""
     from graphs.builder.newsletter_builder import run_newsletter_graph

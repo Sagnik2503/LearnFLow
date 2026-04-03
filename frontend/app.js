@@ -247,27 +247,45 @@ function showNewsletterSkeleton() {
 
 
 // ═══════════════════════════════════════════════════════
-//  RENDER SYLLABUS
+//  RENDER SYLLABUS — BENTO GRID
 // ═══════════════════════════════════════════════════════
-function renderSyllabus(data) {
+function renderBentoGrid(data) {
   state.syllabus = data.syllabus;
   state.trackId = data.track_id;
   state.totalDays = data.total_days;
+  state.subscribed = false;
 
   // Update header
   document.getElementById('syllabus-topic-badge').textContent = data.topic.toUpperCase();
   document.getElementById('syllabus-title').textContent = `Your ${data.total_days}-Day Learning Path`;
-  document.getElementById('syllabus-days-count').textContent = data.total_days;
-  document.getElementById('syllabus-user-email').textContent = state.email || 'your inbox';
+  document.getElementById('syllabus-days-count').textContent = data.totalDays;
+  document.getElementById('syllabus-delivery-time').textContent = formatTime(state.deliveryTime);
+  document.getElementById('subscribe-time-display').textContent = formatTime(state.deliveryTime);
 
-  // Build timeline
-  const timeline = document.getElementById('syllabus-timeline');
-  timeline.innerHTML = '';
+  // Reset subscribe button
+  const btn = document.getElementById('btn-subscribe');
+  const btnText = document.getElementById('btn-subscribe-text');
+  btn.disabled = false;
+  btn.classList.remove('subscribed');
+  btnText.textContent = 'Subscribe & Start Learning';
+
+  // Build bento grid
+  const grid = document.getElementById('syllabus-bento');
+  grid.innerHTML = '';
 
   data.syllabus.forEach((item, i) => {
     const card = document.createElement('div');
-    card.className = 'timeline-card';
-    card.style.animationDelay = `${i * 0.1}s`;
+    const isLast = i === data.syllabus.length - 1;
+    const isFirst = i === 0;
+    const isMilestone = (i + 1) % 3 === 0 && !isFirst && !isLast;
+
+    let cardClass = 'bento-card';
+    if (isFirst) cardClass += ' featured featured-start';
+    else if (isLast) cardClass += ' featured featured-end';
+    else if (isMilestone) cardClass += ' milestone';
+
+    card.className = cardClass;
+    card.style.animationDelay = `${i * 0.06}s`;
 
     const conceptsHtml = item.concepts
       .map(c => `<span class="concept-tag">${c}</span>`)
@@ -278,26 +296,28 @@ function renderSyllabus(data) {
       : '';
 
     card.innerHTML = `
-      <div class="day-card" data-day="${item.day}" data-track="${data.track_id}" id="day-card-${item.day}">
-        <div class="day-card-header">
-          <span class="day-number">Day ${item.day}</span>
-          <span class="day-arrow">→</span>
-        </div>
-        <h3 class="day-title">${item.title}</h3>
-        ${descriptionHtml}
-        <div class="day-concepts">${conceptsHtml}</div>
-      </div>
+      <span class="day-label">Day ${item.day}</span>
+      <h3 class="day-title">${item.title}</h3>
+      ${descriptionHtml}
+      <div class="day-concepts">${conceptsHtml}</div>
     `;
 
-    // Click handler for each day card
-    card.querySelector('.day-card').addEventListener('click', () => {
+    card.addEventListener('click', () => {
       openNewsletter(data.track_id, item.day, item.title);
     });
 
-    timeline.appendChild(card);
+    grid.appendChild(card);
   });
 
   showView('syllabus-view');
+}
+
+function formatTime(time) {
+  const [h, m] = time.split(':');
+  const hour = parseInt(h);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${m} ${ampm}`;
 }
 
 
@@ -340,7 +360,7 @@ async function openNewsletter(trackId, day, title) {
 
 
 // ═══════════════════════════════════════════════════════
-//  FORM SUBMIT — Generate Syllabus
+//  FORM SUBMIT — Generate Syllabus (Preview)
 // ═══════════════════════════════════════════════════════
 async function handleSubmit(e) {
   e.preventDefault();
@@ -381,15 +401,15 @@ async function handleSubmit(e) {
   btnShimmer.style.display = 'block';
 
   try {
-    const res = await fetch(`${API_BASE}/api/subscribe`, {
+    const res = await fetch(`${API_BASE}/api/generate-syllabus`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic, email, delivery_time: deliveryTime }),
+      body: JSON.stringify({ topic, email }),
     });
 
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.detail || 'Subscription failed');
+      throw new Error(err.detail || 'Syllabus generation failed');
     }
 
     const data = await res.json();
@@ -404,17 +424,10 @@ async function handleSubmit(e) {
       el.querySelector('.step-icon').textContent = '✓';
     });
 
-    // Fetch the full syllabus for display
-    const syllabusRes = await fetch(`${API_BASE}/api/syllabus/${data.track_id}`);
-    if (!syllabusRes.ok) {
-      throw new Error('Failed to fetch syllabus');
-    }
-    const syllabusData = await syllabusRes.json();
-
     // Brief pause for the "all done" feeling
     setTimeout(() => {
-      renderSyllabus(syllabusData);
-      showToast(data.message, 'success');
+      renderBentoGrid(data);
+      showToast('Syllabus generated! Review your learning path below.', 'success');
     }, 800);
 
   } catch (err) {
@@ -431,6 +444,52 @@ async function handleSubmit(e) {
 
 
 // ═══════════════════════════════════════════════════════
+//  SUBSCRIBE — Create actual subscription
+// ═══════════════════════════════════════════════════════
+async function handleSubscribe() {
+  const btn = document.getElementById('btn-subscribe');
+  const btnText = document.getElementById('btn-subscribe-text');
+
+  if (state.subscribed) return;
+
+  btn.disabled = true;
+  btnText.textContent = 'Subscribing...';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        topic: state.topic,
+        email: state.email,
+        delivery_time: state.deliveryTime,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Subscription failed');
+    }
+
+    const data = await res.json();
+
+    state.subscribed = true;
+    btn.classList.add('subscribed');
+    btn.disabled = true;
+    btnText.textContent = '✓ Subscribed';
+
+    showToast(data.message, 'success');
+
+  } catch (err) {
+    console.error('Subscribe failed:', err);
+    showToast(err.message, 'error');
+    btn.disabled = false;
+    btnText.textContent = 'Subscribe & Start Learning';
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════
 //  EVENT LISTENERS
 // ═══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
@@ -439,6 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Form submit
   document.getElementById('topic-form').addEventListener('submit', handleSubmit);
+
+  // Subscribe button
+  document.getElementById('btn-subscribe').addEventListener('click', handleSubscribe);
 
   // Back buttons
   document.getElementById('back-to-hero').addEventListener('click', () => {

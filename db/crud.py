@@ -2,10 +2,11 @@ from sqlalchemy.orm import Session
 from db.models import Track, SyllabusItem, User, UserTrack, GeneratedNewsletter
 
 
-def create_user(db: Session, user_id: str):
-    user = User(id=user_id)
+def create_user(db: Session, email: str):
+    user = User(email=email)
     db.add(user)
     db.commit()
+    db.refresh(user)
     return user
 
 
@@ -13,14 +14,14 @@ def get_or_create_user(db: Session, email: str):
     user = db.query(User).filter(User.email == email).first()
     if user:
         return user
-    user = User(id=email, email=email)
+    user = User(email=email)
     db.add(user)
     db.commit()
     db.refresh(user)
     return user
 
 
-def create_subscription(db: Session, user_id: str, track_id: int, total_days: int, delivery_time: str):
+def create_subscription(db: Session, user_id: int, track_id: int, total_days: int, delivery_time: str):
     user_track = UserTrack(
         user_id=user_id,
         track_id=track_id,
@@ -41,21 +42,6 @@ def get_active_subscriptions(db: Session):
         .all()
     )
 
-
-def create_user_track(db: Session, user_id: str, track_id: int, total_days: int, delivery_time: str = "09:00"):
-    user_track = UserTrack(
-        user_id=user_id,
-        track_id=track_id,
-        current_day=1,
-        total_days=total_days,
-        delivery_time=delivery_time,
-    )
-    db.add(user_track)
-    db.commit()
-    db.refresh(user_track)
-    return user_track
-
-
 def get_newsletter(db: Session, user_track_id: int, day: int):
     return (
         db.query(GeneratedNewsletter)
@@ -63,10 +49,8 @@ def get_newsletter(db: Session, user_track_id: int, day: int):
         .first()
     )
 
-
-def get_user_track(db: Session, user_id: str, track_id: int):
+def get_user_track(db: Session, user_id: int, track_id: int):
     return db.query(UserTrack).filter_by(user_id=user_id, track_id=track_id).first()
-
 
 def create_newsletter(db: Session, user_track_id: int, day: int, content: str):
     newsletter = GeneratedNewsletter(
@@ -79,14 +63,12 @@ def create_newsletter(db: Session, user_track_id: int, day: int, content: str):
     db.refresh(newsletter)
     return newsletter
 
-
 def create_track(db: Session, topic: str, total_days: int) -> Track:
     track = Track(topic=topic, total_days=total_days)
     db.add(track)
     db.commit()
     db.refresh(track)
     return track
-
 
 def save_syllabus(
     db: Session, track_id: int, syllabus: list[dict]
@@ -103,7 +85,6 @@ def save_syllabus(
         items.append(row)
     db.commit()
     return items
-
 
 def get_syllabus(db: Session, track_id: int) -> list[SyllabusItem]:
     return (

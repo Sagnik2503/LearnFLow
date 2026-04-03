@@ -71,7 +71,7 @@ DIVE DEEPER URL : {brief.best_url}
     # ── Groq Llama ─────────────────
     writer_llm = ChatGroq(
         model_name="meta-llama/llama-4-scout-17b-16e-instruct",
-        api_key=os.getenv("GROQ_API"),
+        api_key=os.getenv("GROQ_API_KEY"),
     )
     draft = writer_llm.invoke(prompt).content
 

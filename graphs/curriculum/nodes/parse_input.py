@@ -7,7 +7,7 @@ import os
 def parse_input(state: AgentState) -> dict:
     cleaned_topic = state["topic"].strip()
 
-    llm = ChatGroq(model_name="Llama-3.3-70B-Versatile", api_key=os.getenv("GROQ_API"))
+    llm = ChatGroq(model_name="Llama-3.3-70B-Versatile", api_key=os.getenv("GROQ_API_KEY"))
     structured_llm = llm.with_structured_output(DaysDecision)
 
     try:
