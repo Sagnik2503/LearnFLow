@@ -5,7 +5,7 @@ import os
 
 
 def generate_syllabus(state: AgentState) -> dict:
-    llm = ChatGroq(model_name="Llama-3.3-70B-Versatile", api_key=os.getenv("GROQ_API"))
+    llm = ChatGroq(model_name="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"))
     structured_llm = llm.with_structured_output(SyllabusOutput)
     response: SyllabusOutput = structured_llm.invoke(
         [

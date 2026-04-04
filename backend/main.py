@@ -1,76 +1,38 @@
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from db.database import init_db, SessionLocal
 from db.crud import get_syllabus, get_track, get_or_create_user, create_subscription, unsubscribe
 from graphs.builder.curriculum_builder import run_curriculum_graph
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
+from schema.schemas import SubscribeRequest, SubscribeResponse
 
 # ── Init ────────────────────────────────────────────
 init_db()
-
 app = FastAPI(title="LearnFlow API", version="0.1.0")
 
-# CORS – allow the frontend to call the API
+# CORS – configurable via FRONTEND_URL env var
+FRONTEND_URL = os.getenv("FRONTEND_URL", "")
+if FRONTEND_URL:
+    origins = [FRONTEND_URL]
+else:
+    origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ── Serve frontend static files ────────────────────
-FRONTEND_DIR = os.path.abspath("frontend")
-if os.path.isdir(FRONTEND_DIR):
-    app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
-
-
-# ── Routes ─────────────────────────────────────────
-@app.get("/")
-async def serve_frontend():
-    """Serve the frontend index.html"""
-    index_path = os.path.join(FRONTEND_DIR, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return {"message": "LearnFlow API is running. Frontend not found."}
-
-
-@app.get("/index.css")
-async def serve_css():
-    css_path = os.path.join(FRONTEND_DIR, "index.css")
-    if os.path.exists(css_path):
-        return FileResponse(css_path, media_type="text/css")
-    raise HTTPException(status_code=404, detail="CSS file not found")
-
-
-@app.get("/app.js")
-async def serve_js():
-    js_path = os.path.join(FRONTEND_DIR, "app.js")
-    if os.path.exists(js_path):
-        return FileResponse(js_path, media_type="application/javascript")
-    raise HTTPException(status_code=404, detail="JS file not found")
-
 
 # ── Request / Response models ──────────────────────
-class SubscribeRequest(BaseModel):
-    topic: str
-    email: str
-    delivery_time: str
-
-
-class SubscribeResponse(BaseModel):
-    track_id: int
-    topic: str
-    total_days: int
-    message: str
-
-
 class GenerateSyllabusRequest(BaseModel):
     topic: str
     email: str | None = None
@@ -102,10 +64,15 @@ class NewsletterResponse(BaseModel):
 
 # ── API Routes ─────────────────────────────────────
 
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ok", "message": "LearnFlow API is running"}
+
 
 @app.post("/api/subscribe", response_model=SubscribeResponse)
 async def subscribe(req: SubscribeRequest):
     """Subscribe to daily newsletters for a topic."""
+    print(f"📩 Subscribe request: email={req.email}, topic={req.topic}, time={req.delivery_time}")
     if not req.topic or not req.topic.strip():
         raise HTTPException(status_code=400, detail="Topic cannot be empty")
     if not req.email or not req.email.strip():
@@ -155,6 +122,7 @@ async def unsubscribe_endpoint(user_track_id: int):
 @app.post("/api/generate-syllabus", response_model=SyllabusResponse)
 async def generate_syllabus(req: GenerateSyllabusRequest):
     """Generate a multi-day syllabus for a given topic using the LLM curriculum graph."""
+    print(f"📋 Generate syllabus: topic={req.topic}, email={req.email}")
     if not req.topic or not req.topic.strip():
         raise HTTPException(status_code=400, detail="Topic cannot be empty")
 
@@ -199,7 +167,7 @@ async def get_syllabus_by_track(track_id: int):
             SyllabusItemResponse(
                 day=item.day,
                 title=item.title,
-                description=None,
+                description=item.description,
                 concepts=item.concepts,
             )
             for item in items
@@ -218,8 +186,7 @@ async def get_syllabus_by_track(track_id: int):
 @app.get("/api/newsletter/{track_id}/{day}", response_model=NewsletterResponse)
 async def get_newsletter_for_day(track_id: int, day: int):
     """Generate or retrieve a newsletter for a specific day of a track."""
-    from graphs.builder.newsletter_builder import run_newsletter_graph
-    from db.crud import get_previous_title
+    from utils.create_newsletter import build_newsletter
 
     db = SessionLocal()
     try:
@@ -235,20 +202,7 @@ async def get_newsletter_for_day(track_id: int, day: int):
                 status_code=404, detail=f"No syllabus found for day {day}"
             )
 
-        prev_title = get_previous_title(db, track_id, day)
-
-        content = run_newsletter_graph(
-            topic=track.topic,
-            item={
-                "day": syllabus_item.day,
-                "title": syllabus_item.title,
-                "description": "",
-                "concepts": syllabus_item.concepts,
-            },
-            previous=prev_title,
-            day=day,
-            total_days=track.total_days,
-        )
+        content = build_newsletter(db, track_id, day)
 
         return {"day": day, "title": syllabus_item.title, "content": content}
 

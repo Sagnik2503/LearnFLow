@@ -1,5 +1,3 @@
-from google import genai
-from google.genai import types
 from langchain_groq import ChatGroq
 from schema.schemas import ContentState, SyllabusItem
 from prompts.prompt import WRITER_PROMPT

@@ -6,21 +6,18 @@ newsletter_graph = build_graph()
 def run_newsletter_graph(
     topic: str,
     item: dict,
-    previous: str | None,
     day: int,
     total_days: int,
 ) -> str:
     state = {
         "topic": topic,
         "item": item,
-        "previous_topic": previous,
         "day_number": day,
         "total_days": total_days,
         "plan": None,
         "research": [],
         "research_summary": [],
         "draft": "",
-        "feedback": "",
         "feedbacks": [],
         "revision_count": 0,
         "approved": False,

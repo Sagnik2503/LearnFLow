@@ -610,10 +610,9 @@ body {
 
 .bento-card {
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  cursor: pointer;
   transition: all 0.25s var(--ease);
   opacity: 0;
   transform: translateY(12px);
@@ -625,25 +624,10 @@ body {
   overflow: hidden;
 }
 
-.bento-card::after {
-  content: '→';
-  position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
-  color: var(--text-muted);
-  font-size: 1.1rem;
-  transition: all 0.2s var(--ease);
-}
-
 .bento-card:hover {
-  border-color: var(--accent-border);
+  border-color: var(--accent);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
-}
-
-.bento-card:hover::after {
-  transform: translateX(3px);
-  color: var(--accent);
 }
 
 .bento-card.featured {
@@ -653,25 +637,16 @@ body {
 
 .bento-card.featured-start {
   background: linear-gradient(135deg, var(--accent-subtle) 0%, var(--bg-elevated) 60%);
-  border-color: var(--accent-border);
 }
 
 .bento-card.featured-end {
   background: linear-gradient(135deg, rgba(5, 150, 105, 0.06) 0%, var(--bg-elevated) 60%);
-  border-color: rgba(5, 150, 105, 0.2);
-}
-
-.bento-card.featured-end::after {
-  color: var(--success);
-}
-
-.bento-card.featured-end:hover {
-  border-color: rgba(5, 150, 105, 0.3);
 }
 
 .bento-card.milestone {
   grid-column: span 2;
   min-height: 180px;
+  border-width: 1.5px;
 }
 
 @keyframes cardIn {

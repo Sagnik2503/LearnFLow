@@ -18,7 +18,7 @@ class SubscribeResponse(BaseModel):
 class SyllabusItem(BaseModel):
     day: int = Field(description="Day number in the syllabus")
     title: str = Field(description="Title for the day")
-    description: str = Field(  # ← NEW
+    description: str = Field(
         description=(
             "2–3 sentence teaser shown to the reader before they open the day's newsletter. "
             "Written in second-person ('You'll discover…', 'By the end of today…'). "
@@ -45,17 +45,6 @@ class DaysDecision(BaseModel):
         le=14,
         description="Number of days needed to cover this topic well for a beginner",
     )
-
-
-from typing import List
-from pydantic import BaseModel
-
-
-class SyllabusItem(BaseModel):
-    day: int
-    title: str
-    description: str
-    concepts: List[str]
 
 
 class ConceptBrief(BaseModel):
@@ -112,7 +101,6 @@ class ContentState(TypedDict):
     research: List[ExaResult]
     research_summary: List[ConceptBrief]
     draft: str
-    feedback: str
     feedbacks: List[Feedback]
     revision_count: int
     approved: bool

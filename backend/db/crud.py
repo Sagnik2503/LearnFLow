@@ -2,14 +2,6 @@ from sqlalchemy.orm import Session
 from db.models import Track, SyllabusItem, User, UserTrack, GeneratedNewsletter
 
 
-def create_user(db: Session, email: str):
-    user = User(email=email)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
-
-
 def get_or_create_user(db: Session, email: str):
     user = db.query(User).filter(User.email == email).first()
     if user:
@@ -34,13 +26,6 @@ def create_subscription(db: Session, user_id: int, track_id: int, total_days: in
     db.refresh(user_track)
     return user_track
 
-
-def get_active_subscriptions(db: Session):
-    return (
-        db.query(UserTrack)
-        .filter(UserTrack.active == 1, UserTrack.current_day <= UserTrack.total_days)
-        .all()
-    )
 
 def get_newsletter(db: Session, user_track_id: int, day: int):
     return (
@@ -79,6 +64,7 @@ def save_syllabus(
             track_id=track_id,
             day=item["day"],
             title=item["title"],
+            description=item.get("description"),
             concepts=item["concepts"],
         )
         db.add(row)
@@ -115,3 +101,25 @@ def unsubscribe(db: Session, user_track_id: int):
         db.commit()
         db.refresh(user_track)
     return user_track
+
+
+def get_active_tracks_for_generation(db: Session):
+    """Get all active user_tracks that still have days remaining."""
+    return (
+        db.query(UserTrack)
+        .filter(UserTrack.active == 1, UserTrack.current_day <= UserTrack.total_days)
+        .all()
+    )
+
+
+def get_active_tracks_for_delivery(db: Session, delivery_time: str):
+    """Get all active user_tracks whose delivery_time matches the given time."""
+    return (
+        db.query(UserTrack)
+        .filter(
+            UserTrack.active == 1,
+            UserTrack.delivery_time == delivery_time,
+            UserTrack.current_day <= UserTrack.total_days,
+        )
+        .all()
+    )

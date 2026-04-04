@@ -2,7 +2,7 @@
    LearnFlow — Frontend Application
    ═══════════════════════════════════════════════════════ */
 
-const API_BASE = window.location.origin;
+const API_BASE = window.API_BASE_URL || window.location.origin;
 
 // ── State ──────────────────────────────────────────
 const state = {
@@ -301,10 +301,6 @@ function renderBentoGrid(data) {
       ${descriptionHtml}
       <div class="day-concepts">${conceptsHtml}</div>
     `;
-
-    card.addEventListener('click', () => {
-      openNewsletter(data.track_id, item.day, item.title);
-    });
 
     grid.appendChild(card);
   });

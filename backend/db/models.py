@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, JSON, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, JSON, String, Text
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 
@@ -27,6 +27,7 @@ class SyllabusItem(Base):
     track_id = Column(Integer, ForeignKey("tracks.id"), nullable=False)
     day = Column(Integer, nullable=False)
     title = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
     concepts = Column(JSON, nullable=False)  # stored as a JSON array
 
     track = relationship("Track", back_populates="syllabus_items")

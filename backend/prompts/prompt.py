@@ -172,38 +172,41 @@ Raw Research:
 
 Extract EXACTLY these fields:
 
-1. definition
+1. concept
+   Copy the concept name exactly as given above.
+
+2. definition
    One-to-two crisp sentences explaining what this concept is in plain language.
    Must be accurate and beginner-friendly.
 
-2. example
+3. example
    One concrete real-world example that makes the concept click.
    MUST include specific names, organisations, or numbers found in the source.
    Do NOT invent examples not present in the research.
 
-3. fun_fact
+4. fun_fact
    One surprising or counter-intuitive fact that will make a learner go "I didn't know that."
    MUST include a specific number, date, or name from the source.
    Do NOT use vague statements like "it's used widely."
 
-4. best_url
+5. best_url
    The single most beginner-friendly and informative URL from the results.
 
-5. key_statistic
+6. key_statistic
    Copy one specific statistic, number, or date from the source text, along with its surrounding context sentence.
    Example format: "In 2012, AlexNet reduced image recognition error from 26% to 15.3%, beating the second-best by 10 percentage points."
    If no number is present in the source, extract the single most specific factual claim you found.
    Do NOT invent numbers.
 
-6. direct_quote
+7. direct_quote
    Copy one short sentence or phrase almost verbatim from the source that captures the concept or an important aspect of it precisely.
    This should be something a textbook or article actually said — not your paraphrase.
    It must be specific and informative, not a vague overview statement.
 
-7. source_title
+8. source_title
    The title of the primary source article you used most heavily for this concept.
 
-8. pedagogical_detail
+9. pedagogical_detail
    One specific HOW-IT-WORKS mechanism or process step from the source that explains WHY the concept works the way it does.
    This must be a detail a beginner would NOT know without reading the source — something concrete, specific, and mechanistic.
    Example: "A backpropagation pass computes gradients by applying the chain rule layer-by-layer in reverse, so a network with 100 layers performs 100 sequential gradient multiplications in a single update step."
