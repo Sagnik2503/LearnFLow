@@ -13,7 +13,7 @@ init_db()
 db = SessionLocal()
 
 USER_ID = 1
-TOPIC = "F1 rules"
+TOPIC = "recommendation algorithms"
 EMAIL = os.getenv("TEST_MAIL")
 APP_PW = os.getenv("EMAIL_APP_PASSWORD")
 DELIVERY_TIME = "09:00"
@@ -29,13 +29,10 @@ def run_test():
     print("\n=== GENERATED MARKDOWN ===\n")
     print(content_md[:500])  # preview
 
-    # 3. Convert to HTML
-    html_content = markdown_to_html(content_md)
-
-    # 4. Send email
+    # 3. Send email
     send_newsletter_email(
         to_email=EMAIL,
-        subject="Day 1: F1 rules: How it works!",
+        subject="Day 1: Why Your Feed Knows You Better Than You Know Yourself",
         markdown_content=content_md,
     )
     print("\n✅ Email sent! Check your inbox.")

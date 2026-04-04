@@ -53,6 +53,10 @@ class ConceptBrief(BaseModel):
     example: str  # 1 concrete real-world example — MUST include specific names/numbers
     fun_fact: str  # 1 surprising fact — MUST include a specific number, date, or name
     best_url: str  # single best URL for further reading
+    additional_urls: List[str] = Field(
+        default_factory=list,
+        description="2-3 additional URLs for further reading on this concept",
+    )
     # Grounding fields — extracted almost verbatim from source material
     key_statistic: str  # one specific number/date/stat from source, with context sentence
     direct_quote: str  # one short sentence or phrase from the source captured closely

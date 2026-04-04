@@ -190,24 +190,34 @@ Extract EXACTLY these fields:
 
 5. best_url
    The single most beginner-friendly and informative URL from the results.
+   This will be the primary "Dive deeper" link in the newsletter.
 
-6. key_statistic
+6. additional_urls
+   Extract 2-3 ADDITIONAL URLs from the research results that would be valuable for further reading.
+   These should be different sources than best_url — prioritize:
+   - Recent articles (2024-2026) for current relevance
+   - Different perspectives or angles on the concept
+   - Authoritative sources (academic, industry publications, official documentation)
+   - URLs that complement (not duplicate) the best_url
+   Return as a list of URL strings. If fewer than 2 additional quality URLs exist, return what you have.
+
+7. key_statistic
    Copy one specific statistic, number, or date from the source text, along with its surrounding context sentence.
    Example format: "In 2012, AlexNet reduced image recognition error from 26% to 15.3%, beating the second-best by 10 percentage points."
    If no number is present in the source, extract the single most specific factual claim you found.
 
-7. direct_quote
+8. direct_quote
    Copy one short sentence or phrase almost verbatim from the source that captures the concept or an important aspect of it precisely.
    Must be specific and informative, not a vague overview statement.
 
-8. source_title
+9. source_title
    The title of the primary source article you used most heavily for this concept.
 
-9. pedagogical_detail
-   One specific HOW-IT-WORKS mechanism or process step from the source that explains WHY the concept works the way it does.
-   This must be a detail a beginner would NOT know without reading the source — something concrete, specific, and mechanistic.
-   Example: "A backpropagation pass computes gradients by applying the chain rule layer-by-layer in reverse."
-   Do NOT write generic explanations like "it processes data in layers."
+10. pedagogical_detail
+    One specific HOW-IT-WORKS mechanism or process step from the source that explains WHY the concept works the way it does.
+    This must be a detail a beginner would NOT know without reading the source — something concrete, specific, and mechanistic.
+    Example: "A backpropagation pass computes gradients by applying the chain rule layer-by-layer in reverse."
+    Do NOT write generic explanations like "it processes data in layers."
 
 Be specific. Prioritise source material over your own knowledge.
 Return a valid ConceptBrief object.
@@ -237,56 +247,97 @@ Research briefs (your source material — expand, never copy):
 {research_summaries}
 
 ═══════════════════════════════════════════════════════
-CONTENT REQUIREMENTS
+OUTPUT FORMAT — THIS IS CRITICAL
 ═══════════════════════════════════════════════════════
 
-Each section must include ALL of the following, woven together naturally:
+Generate EXACTLY this markdown structure:
 
-• Definition — explain the concept in plain English, bold key terms on first use
-• Mechanics — step-by-step explanation of how/why it works (the engine room)
-• Real example — specific names, numbers, dates, organizations (use real ones, not hypothetical)
-• Fun fact — a surprising or counter-intuitive piece of information with a specific detail
-• Significance — why this matters to the reader, what breaks without it
-• Resource — a dive-deeper URL from the research brief
+```
+╔══════════════════════════════════════════════════════╗
+║  MODULE {day_number} OF {total_days}                      ║
+║  {newsletter_title}                                      ║
+╚══════════════════════════════════════════════════════╝
 
-Structure is your creative decision. Flow matters — sections should build on each other,
-not read as isolated essays. The final section should synthesize all concepts.
+## 🚀 [ENGAGING HOOK HEADLINE — max 8 words, provocative or surprising]
 
-Additional structural elements:
-• Opening hook (3-4 sentences) — must start with a specific fact or counter-intuitive claim
-• Closing takeaway task — one concrete thing the reader can do today, no tools needed
-• Closing reflection — a simple question or prompt for reflection
+[Opening paragraph: 3-4 sentences. First sentence MUST be a specific fact,
+ number, or counter-intuitive claim. Make the reader's jaw drop immediately.]
+
+[2-3 more paragraphs building on the hook, leading into the sections below]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## [SECTION 1 HEADING — punchy, curious, max 6 words]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Paragraph 1: Definition — bold the key term on first use, explain in plain English. 3-4 sentences.]
+
+[Paragraph 2: How it works step-by-step. Walk through the mechanism as if teaching a friend. 4-5 sentences.]
+
+[Paragraph 3: Deep dive into WHY it works this way. Explain the underlying principles, trade-offs, or design decisions. 4-5 sentences.]
+
+[Paragraph 4: Real example with SPECIFIC names, numbers, dates, organizations. Tell it as a story, not a list. 4-5 sentences.]
+
+[Paragraph 5: What this means in practice. How it affects the real world, what breaks without it, or what changed because of it. 3-4 sentences.]
+
+💡 **Did you know?** [Fun fact — surprising, with specific detail. Make them say "wait, really?!"]
+
+📖 **Further Reading:**
+- [Primary source title] — [URL from research brief]
+- [Second source title] — [URL from research brief]
+- [Third source title] — [URL from research brief]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## [SECTION 2 HEADING]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Same 5-paragraph structure as Section 1 — definition, mechanics, deep dive, real example, real-world impact]
+
+💡 **Did you know?** [Fun fact]
+
+📖 **Further Reading:**
+- [Primary source] — [URL]
+- [Second source] — [URL]
+- [Third source] — [URL]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## [SECTION 3 HEADING]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[Same 5-paragraph structure — but this section should synthesize previous concepts into a unified mental model]
+
+💡 **Did you know?** [Fun fact]
+
+📖 **Further Reading:**
+- [Primary source] — [URL]
+- [Second source] — [URL]
+- [Third source] — [URL]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## 🎯 YOUR MISSION TODAY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[One concrete, actionable task the reader can do TODAY. Be specific. 
+ "Next time you [X], notice [Y]" format works great. No tools needed.]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## 💭 FOOD FOR THOUGHT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[One reflection question — open-ended, makes them think differently. 
+ Not "what did you learn?" but something that challenges assumptions.]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
 ═══════════════════════════════════════════════════════
-INFORMATION DENSITY (CRITICAL)
+WORD COUNT — NON-NEGOTIABLE
 ═══════════════════════════════════════════════════════
 
-Every paragraph must contain at least ONE of:
-• A specific fact, number, date, or name
-• A concrete mechanism explained step by step
-• A real-world example or case study
-• A mental model or framework the reader can reuse
-
-A paragraph of only setup, transition, or rhetorical questions FAILS this rule.
-
-The research dossiers are your PRIMARY source material. For each concept, the dossier contains
-MANDATORY fields you MUST use:
-
-• KEY STATISTIC → must appear in that section, nearly verbatim
-• DIRECT QUOTE → must be woven into the section as a specific claim
-• PEDAGOGICAL DETAIL → must appear in the mechanics paragraph
-• DEFINITION, EXAMPLE, FUN FACT, URL → expand, do not omit
-
-═══════════════════════════════════════════════════════
-THE DEPTH LADDER
-═══════════════════════════════════════════════════════
-
-Each section must cover four levels:
-
-1. WHAT — Surface definition. What is this thing?
-2. HOW — The engine room. How does it actually work?
-3. SO WHAT — Real-world impact. What breaks without it?
-4. CONNECTION — How this links to the bigger picture or next concept
+• EACH SECTION: minimum 400 words, target 450-550 words
+• OPENING (hook + intro paragraphs): minimum 200 words
+• FULL NEWSLETTER: minimum 1400 words, target 1500-1800 words
+• DO NOT write short sections. If a section is under 350 words, you have NOT explained the concept deeply enough.
+• Every section must have ALL 5 paragraphs described above. No shortcuts.
 
 ═══════════════════════════════════════════════════════
 WRITING RULES
@@ -297,51 +348,61 @@ TONE
 • Use "you" and "your"
 • Every section should have at least one moment that makes the reader think: "I didn't know that."
 
-FORMATTING
-• Short paragraphs: 2-3 sentences maximum
-• Blank line between EVERY paragraph
-• Bullet points for lists when appropriate
-• Maximum 2 emojis per section (💡 for fun fact, 📖 for URL)
-• Bold only for key term introduction
+INFORMATION DENSITY (CRITICAL)
+• Every paragraph must contain at least ONE of: a specific fact, number, date, name, or step-by-step mechanism
+• A paragraph of only setup, transition, or rhetorical questions FAILS
+• The research dossiers are your PRIMARY source. You MUST use:
+  - KEY STATISTIC → must appear nearly verbatim
+  - DIRECT QUOTE → must be woven in as a specific claim
+  - PEDAGOGICAL DETAIL → must appear in the mechanics paragraph
+  - DEFINITION, EXAMPLE, FUN FACT → expand all of them
+
+FURTHER READING (CRITICAL)
+• EVERY section must include 2-3 "Further Reading" links from the research brief
+• Each link must have a descriptive title explaining WHAT the reader will learn from it
+• Use ALL URLs from the research dossier — best_url AND additional_urls
+• Format each link as: "[Descriptive title] — [URL]"
+• Titles should be specific, not generic like "Learn more" or "Read more"
+• Good: "How YouTube's algorithm decides what you watch next — https://..."
+• Good: "The 2024 study that proved recommendation systems create echo chambers — https://..."
+• Bad: "Read more here — https://..."
+• A section with fewer than 2 Further Reading links FAILS
+
+SCROLL-STOPPING ENERGY
+• At least once per section, write a sentence so punchy a skimmer would stop
+• Strong lines: SHORT subject + SHARP verb + SPECIFIC detail
+• Bad: "Neural networks are important in modern AI."
+• Good: "In 2012, a neural network looked at 1 million images and taught itself to recognize cats. Nobody programmed that."
+
+TASK FORMAT
+• Use exact format: "Next time you [do X], notice [Y]."
+• Must be doable in under 60 seconds, no tools needed
+• Good: "Next time you watch an F1 race, count how many times drivers adjust their brake bias dial."
+• Bad: "Read a paper on this topic" (too much work)
+• Bad: "Think about this in your life" (too vague)
+
+REFLECTION FORMAT
+• One question that challenges assumptions or reveals new perspective
+• Should make them go "hmm, I never thought about it that way"
+• Bad: "What did you learn today?" (boring)
+• Good: "Why do you think regulations change only after someone gets hurt?"
 
 BANNED PHRASES — never write these:
 • "delve", "dive into", "unpack", "let's explore", "in conclusion"
 • "to summarise", "it's worth noting", "fascinating", "crucial", "game-changer"
 • "In the world of", "For decades", "At its core", "Imagine", "Essentially"
 • "Basically", "Now that you know", "your view should have shifted"
-• "The mechanics are straightforward", "This matters because", "Here's why this matters"
-• "To understand this", "Think of it like", "Simply put", "In other words"
+• "This matters because", "Here's why this matters", "Simply put"
+• "A fun fact is", "An interesting fact" (just state the fact directly)
+• "This is", "There are", "It is important to" (dead weight phrases)
 
 ANTI-REPETITION
 • Never repeat a fact, statistic, date, or number across sections
 • Never reuse the same example across sections
-• Never restate a definition in different words later
-• Fun facts must be brand-new information, not paraphrases of content already written
+• Fun facts must be brand-new information
 
-SHARP INSIGHT RULE
-• Every section must include ONE sharp, unexpected insight
-• This is the line that makes the reader pause and think differently
-• Examples: "Rules don't just ensure fairness — they often decide who wins."
-• A section that only informs but never surprises FAILS
-
-SCROLL-STOPPING ENERGY
-• At least once per section, write a sentence so punchy a skimmer would stop and read it
-• Strong lines have SHORT subject + SHARP verb + SPECIFIC detail
-• Bad: "Neural networks are important in modern AI applications."
-• Good: "In 2012, a neural network looked at 1 million images and taught itself to recognize cats. Nobody programmed that."
-
-TASK
-• One thing, doable today, no setup required
-• Good: "Next time you open a food delivery app, look at the 'platform fee' line on your bill."
-• Bad: "Think about how mutual funds work in your life."
-
-WORD COUNT
-• Each section: 250-350 words of dense, useful content
-• Full newsletter: 800-1200 words
-
-PEDAGOGY
-• Focus on pedagogical excellence: relatable analogies, clear intuition
-• Reader should feel a tangible "aha!" moment and genuinely master the concept
+Remember: You're writing for someone who opens this on their phone while having coffee.
+Every section should be readable in 30 seconds. Make them feel smart, not overwhelmed.
 
 ═══════════════════════════════════════════════════════
 OUTPUT
@@ -397,6 +458,19 @@ REVIEW RULES:
 6. HALLUCINATION RISK
    - Specific claims (numbers, dates, names, events) not supported by the research
    - Ignore widely-known general knowledge
+
+7. FORMATTING QUALITY (enforce strictly)
+   - Day counter banner (╔══╗) missing or incorrectly formatted
+   - Section dividers (━━) missing between sections
+   - "💡 Did you know?" callout missing from any section
+   - "📖 Further Reading:" section missing from any section
+   - Fewer than 2 Further Reading links in any section
+   - Further Reading links with generic titles like "Read more" or "Learn more"
+   - "🎯 YOUR MISSION TODAY" section missing
+   - "💭 FOOD FOR THOUGHT" reflection missing
+   - Headlines are generic rather than punchy/curious
+   - Opening paragraph doesn't start with a specific fact
+   - Task doesn't follow "Next time you [X], notice [Y]" format
 
 ---
 CONSTRAINTS:

@@ -43,6 +43,8 @@ def summarizer_node(state: ContentState) -> dict:
         print(f"   ✅ Definition: {brief.definition[:80]}...")
         print(f"   💡 Fun fact:   {brief.fun_fact[:80]}...")
         print(f"   🔗 Best URL:   {brief.best_url}")
+        if brief.additional_urls:
+            print(f"   📚 Additional: {len(brief.additional_urls)} extra URLs")
 
     print(f"\n{'='*60}")
     print(f"✅ Summarization complete — {len(briefs)} concept briefs ready")
