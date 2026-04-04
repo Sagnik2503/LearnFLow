@@ -26,3 +26,8 @@ dependencies = [
     "tavily-python>=0.7.22",
     "uvicorn>=0.41.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.9",
+]
