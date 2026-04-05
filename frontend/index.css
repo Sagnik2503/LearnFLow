@@ -961,6 +961,105 @@ body {
   100% { background-position: -200% 0; }
 }
 
+/* ── Newsletter Editorial Styles ──────────────── */
+
+/* Citation superscripts */
+.newsletter-body .citation a {
+  color: var(--accent);
+  font-size: 0.75em;
+  font-weight: 600;
+  text-decoration: none;
+  vertical-align: super;
+  margin: 0 1px;
+  line-height: 1;
+}
+
+.newsletter-body .citation a:hover {
+  border-bottom: none;
+  opacity: 0.7;
+}
+
+/* Sources section */
+.newsletter-body .sources,
+.newsletter-body p:has(strong:first-child:contains("Sources")) {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.newsletter-body .sources-list,
+.newsletter-body ul.sources {
+  list-style: none;
+  counter-reset: source;
+  padding-left: 0;
+  margin: 0.75rem 0 0;
+}
+
+.newsletter-body .sources-list li,
+.newsletter-body ul.sources li {
+  counter-increment: source;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+.newsletter-body .sources-list li:last-child,
+.newsletter-body ul.sources li:last-child {
+  border-bottom: none;
+}
+
+.newsletter-body .sources-list li::before,
+.newsletter-body ul.sources li::before {
+  content: counter(source) ". ";
+  font-weight: 600;
+  color: var(--accent);
+  margin-right: 4px;
+}
+
+/* "Did you know?" callout */
+.newsletter-body .callout {
+  background: var(--bg-subtle);
+  border-left: 3px solid var(--accent);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* Bare URL fallback — prevent overflow */
+.newsletter-body .bare-url {
+  word-break: break-all;
+  overflow-wrap: break-word;
+  font-size: 0.85em;
+  color: var(--accent);
+}
+
+/* Improved horizontal rules */
+.newsletter-body hr {
+  border: none;
+  height: 1px;
+  background: var(--border);
+  margin: 2rem 0;
+}
+
+/* Typography refinements */
+.newsletter-body p {
+  line-height: 1.7;
+}
+
+.newsletter-body h2 {
+  margin-top: 2.5rem;
+}
+
+/* Sources bold text styling */
+.newsletter-body p strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
 /* ═══════════════════════════════════════════════════════
    TOAST
    ═══════════════════════════════════════════════════════ */

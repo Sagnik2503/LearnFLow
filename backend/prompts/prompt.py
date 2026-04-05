@@ -253,11 +253,6 @@ OUTPUT FORMAT — THIS IS CRITICAL
 Generate EXACTLY this markdown structure:
 
 ```
-╔══════════════════════════════════════════════════════╗
-║  MODULE {day_number} OF {total_days}                      ║
-║  {newsletter_title}                                      ║
-╚══════════════════════════════════════════════════════╝
-
 ## 🚀 [ENGAGING HOOK HEADLINE — max 8 words, provocative or surprising]
 
 [Opening paragraph: 3-4 sentences. First sentence MUST be a specific fact,
@@ -265,9 +260,8 @@ Generate EXACTLY this markdown structure:
 
 [2-3 more paragraphs building on the hook, leading into the sections below]
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---
 ## [SECTION 1 HEADING — punchy, curious, max 6 words]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [Paragraph 1: Definition — bold the key term on first use, explain in plain English. 3-4 sentences.]
 
@@ -281,52 +275,33 @@ Generate EXACTLY this markdown structure:
 
 💡 **Did you know?** [Fun fact — surprising, with specific detail. Make them say "wait, really?!"]
 
-📖 **Further Reading:**
-- [Primary source title] — [URL from research brief]
-- [Second source title] — [URL from research brief]
-- [Third source title] — [URL from research brief]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---
 ## [SECTION 2 HEADING]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [Same 5-paragraph structure as Section 1 — definition, mechanics, deep dive, real example, real-world impact]
 
 💡 **Did you know?** [Fun fact]
 
-📖 **Further Reading:**
-- [Primary source] — [URL]
-- [Second source] — [URL]
-- [Third source] — [URL]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---
 ## [SECTION 3 HEADING]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [Same 5-paragraph structure — but this section should synthesize previous concepts into a unified mental model]
 
 💡 **Did you know?** [Fun fact]
 
-📖 **Further Reading:**
-- [Primary source] — [URL]
-- [Second source] — [URL]
-- [Third source] — [URL]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---
 ## 🎯 YOUR MISSION TODAY
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[One concrete, actionable task the reader can do TODAY. Be specific. 
+[One concrete, actionable task the reader can do TODAY. Be specific.
  "Next time you [X], notice [Y]" format works great. No tools needed.]
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---
 ## 💭 FOOD FOR THOUGHT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[One reflection question — open-ended, makes them think differently. 
+[One reflection question — open-ended, makes them think differently.
  Not "what did you learn?" but something that challenges assumptions.]
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---
 ```
 
 ═══════════════════════════════════════════════════════
@@ -357,16 +332,23 @@ INFORMATION DENSITY (CRITICAL)
   - PEDAGOGICAL DETAIL → must appear in the mechanics paragraph
   - DEFINITION, EXAMPLE, FUN FACT → expand all of them
 
-FURTHER READING (CRITICAL)
-• EVERY section must include 2-3 "Further Reading" links from the research brief
-• Each link must have a descriptive title explaining WHAT the reader will learn from it
-• Use ALL URLs from the research dossier — best_url AND additional_urls
-• Format each link as: "[Descriptive title] — [URL]"
-• Titles should be specific, not generic like "Learn more" or "Read more"
-• Good: "How YouTube's algorithm decides what you watch next — https://..."
-• Good: "The 2024 study that proved recommendation systems create echo chambers — https://..."
-• Bad: "Read more here — https://..."
-• A section with fewer than 2 Further Reading links FAILS
+CITATIONS AND SOURCES (CRITICAL)
+• Use numbered citation markers [1], [2], [3] inline in the text whenever you reference
+  material from the research dossiers. Place them immediately after the claim or fact.
+• Example: "In 2012, a neural network looked at 1 million images and taught itself to recognize cats.[1] Nobody programmed that behavior — it emerged from the architecture itself.[2]"
+• At the END of EACH section, include a "Sources" block listing all URLs used:
+
+  **Sources**
+  1. [Descriptive title explaining WHAT the reader will learn] — (https://url-from-dossier)
+  2. [Second source title] — (https://url-from-dossier)
+  3. [Third source title] — (https://url-from-dossier)
+
+• Use ALL URLs from the research dossier — the numbered [1], [2], [3] entries in your dossier
+• Titles must be specific, not generic like "Learn more" or "Read more"
+• Good: "How YouTube's algorithm decides what you watch next — (https://...)"
+• Good: "The 2024 study that proved recommendation systems create echo chambers — (https://...)"
+• Bad: "Read more here — (https://...)"
+• A section with fewer than 2 sources FAILS
 
 SCROLL-STOPPING ENERGY
 • At least once per section, write a sentence so punchy a skimmer would stop
@@ -460,17 +442,18 @@ REVIEW RULES:
    - Ignore widely-known general knowledge
 
 7. FORMATTING QUALITY (enforce strictly)
-   - Day counter banner (╔══╗) missing or incorrectly formatted
-   - Section dividers (━━) missing between sections
-   - "💡 Did you know?" callout missing from any section
-   - "📖 Further Reading:" section missing from any section
-   - Fewer than 2 Further Reading links in any section
-   - Further Reading links with generic titles like "Read more" or "Learn more"
-   - "🎯 YOUR MISSION TODAY" section missing
-   - "💭 FOOD FOR THOUGHT" reflection missing
-   - Headlines are generic rather than punchy/curious
-   - Opening paragraph doesn't start with a specific fact
-   - Task doesn't follow "Next time you [X], notice [Y]" format
+    - Section dividers (---) missing between sections
+    - "💡 Did you know?" callout missing from any section
+    - "Sources" section missing from any section
+    - Fewer than 2 sources listed in any section
+    - Sources with generic titles like "Read more" or "Learn more"
+    - Sources not using markdown link format: [title] — (url)
+    - Inline citation markers [1], [2], [3] not used in section text
+    - "🎯 YOUR MISSION TODAY" section missing
+    - "💭 FOOD FOR THOUGHT" reflection missing
+    - Headlines are generic rather than punchy/curious
+    - Opening paragraph doesn't start with a specific fact
+    - Task doesn't follow "Next time you [X], notice [Y]" format
 
 ---
 CONSTRAINTS:
@@ -481,22 +464,6 @@ CONSTRAINTS:
 
 ---
 OUTPUT FORMAT:
-Return ONLY valid JSON, no markdown, no code fences.
-
-{{
-  "approved": boolean,
-  "feedbacks": [
-    {{
-      "section": "string",
-      "issue": "string",
-      "suggestion": "string"
-    }}
-  ]
-}}
-
-If no issues found:
-{{
-  "approved": true,
-  "feedbacks": []
-}}
+Use the provided tool schema to return your response.
+If no issues found, set approved to true with an empty feedbacks list.
 """

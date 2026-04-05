@@ -14,7 +14,7 @@ def summarizer_node(state: ContentState) -> dict:
 
     print(f"📋 Total raw results: {len(research)}")
 
-    llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"))
+    llm = ChatGroq(model="meta-llama/llama-4-scout-17b-16e-instruct", api_key=os.getenv("GROQ_API_KEY"))
 
     base_count = len(research) // len(plan.sections)
     remainder = len(research) % len(plan.sections)

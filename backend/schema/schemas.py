@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, TypedDict
 
 
@@ -98,7 +98,7 @@ class Feedback(BaseModel):
 
 class CriticOutput(BaseModel):
     feedbacks: List[Feedback]
-    approved: bool
+    approved: str = Field(description="true or false")
 
 
 class ContentState(TypedDict):

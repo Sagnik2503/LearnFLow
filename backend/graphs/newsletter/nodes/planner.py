@@ -11,7 +11,7 @@ def planner_node(state: ContentState) -> dict:
         concepts=", ".join(state["item"]["concepts"]),
     )
     llm = ChatGroq(
-        model_name="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY")
+        model_name="meta-llama/llama-4-scout-17b-16e-instruct", api_key=os.getenv("GROQ_API_KEY")
     )
     plan = llm.with_structured_output(Plan).invoke(prompt)
 

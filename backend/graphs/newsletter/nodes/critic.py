@@ -29,18 +29,19 @@ def critic_node(state: ContentState) -> ContentState:
     prompt = CRITIC_PROMPT.format(
         draft=state["draft"], research_summaries=research_text
     )
-    llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"))
+    llm = ChatGroq(model="meta-llama/llama-4-scout-17b-16e-instruct", api_key=os.getenv("GROQ_API_KEY"))
     result: CriticOutput = llm.with_structured_output(CriticOutput).invoke(prompt)
 
     for annotation in result.feedbacks:
         print(f"   ⚠️  [{annotation.section}] {annotation.issue[:80]}...")
 
-    print(f"   ✅ Approved: {result.approved}")
+    approved = result.approved.lower() in ("true", "yes", "1")
+    print(f"   ✅ Approved: {approved}")
     print(f"{'='*60}\n")
 
     return {
         "feedbacks": result.feedbacks,
-        "approved": result.approved,
+        "approved": approved,
         "revision_count": revision_count + 1,
     }
 

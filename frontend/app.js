@@ -198,8 +198,16 @@ function renderMarkdown(md) {
 
     .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
 
+    // Sources format: [title] — (url)
+    .replace(/\[([^\]]+)\]\s*—\s*\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+
+    // Standard markdown links: [title](url)
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
 
+    // Citation markers: [1], [2], [3] → superscript links
+    .replace(/\[(\d+)\]/g, '<sup class="citation"><a href="#source-$1">$1</a></sup>')
+
+    // Bare URLs (fallback only)
     .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" class="bare-url">$1</a>')
 
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:12px;margin:1rem 0;" />')

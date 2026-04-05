@@ -26,7 +26,8 @@ Key Points to expand on:
 
     research_text = ""
     for brief in state["research_summary"]:
-        additional_urls_str = "\n".join(f"  - {url}" for url in brief.additional_urls)
+        all_urls = [brief.best_url] + list(brief.additional_urls)
+        numbered_urls = "\n".join(f"  [{i}] {url}" for i, url in enumerate(all_urls, 1))
         research_text += f"""
 ╔══ RESEARCH DOSSIER: {brief.concept} ══╗
 
@@ -50,12 +51,9 @@ REAL EXAMPLE    : {brief.example}
 [Expand with "why this is surprising" context]
 FUN FACT        : {brief.fun_fact}
 
-[Use verbatim — do not invent or modify]
-DIVE DEEPER URL : {brief.best_url}
-
-[ADDITIONAL URLs for Further Reading — use ALL of these in Further Reading sections]
-ADDITIONAL URLS :
-{additional_urls_str}
+[NUMBERED URLs — reference these as [1], [2], [3] inline citations in your text]
+SOURCES         :
+{numbered_urls}
 
 ╚═══════════════════════════════════════╝
 """
