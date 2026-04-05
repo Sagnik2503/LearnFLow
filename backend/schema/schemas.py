@@ -1,11 +1,13 @@
 from pydantic import BaseModel, Field
-from typing import List, TypedDict, Optional
+from typing import List, TypedDict
 
 
 class SubscribeRequest(BaseModel):
     topic: str = Field(description="Topic to learn")
     email: str = Field(description="Email for daily newsletters")
-    delivery_time: str = Field(default="09:00", description="Time to receive newsletter (HH:MM)")
+    delivery_time: str = Field(
+        default="09:00", description="Time to receive newsletter (HH:MM)"
+    )
 
 
 class SubscribeResponse(BaseModel):
@@ -58,7 +60,9 @@ class ConceptBrief(BaseModel):
         description="2-3 additional URLs for further reading on this concept",
     )
     # Grounding fields — extracted almost verbatim from source material
-    key_statistic: str  # one specific number/date/stat from source, with context sentence
+    key_statistic: (
+        str  # one specific number/date/stat from source, with context sentence
+    )
     direct_quote: str  # one short sentence or phrase from the source captured closely
     source_title: str  # title of the primary source article used
     pedagogical_detail: str  # a specific HOW-IT-WORKS mechanism from the source that a beginner wouldn't know without reading it
@@ -75,7 +79,7 @@ class Section(BaseModel):
     concept: str
     heading: str
     key_points: List[str] = Field(description="Exactly 3 key points, no more")
-    exa_queries: List[str] = Field(description="Exactly 2 search queries, no more")
+    exa_queries: List[str] = Field(description="Exactly 3 search queries, no more")
     target_words: int = Field(default=500, description="Always 500")
 
 

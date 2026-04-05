@@ -10,9 +10,9 @@ def research_node(state: ContentState) -> dict:
         for query in section.exa_queries:
             exa_queries_list.append(query)
 
-    print(f"\n{'='*60}")
-    print(f"🔍 RESEARCHER NODE")
-    print(f"{'='*60}")
+    print(f"\n{'=' * 60}")
+    print("🔍 RESEARCHER NODE")
+    print(f"{'=' * 60}")
     print(f"📋 Total queries to run: {len(exa_queries_list)}")
     for i, q in enumerate(exa_queries_list, 1):
         print(f"   {i}. {q}")
@@ -24,7 +24,7 @@ def research_node(state: ContentState) -> dict:
         result = exa.search(
             query,
             type="auto",
-            num_results=2,
+            num_results=5,
             contents={
                 "highlights": {"max_characters": 4000},
                 "text": True,
@@ -38,6 +38,15 @@ def research_node(state: ContentState) -> dict:
                 "baeldung.com",
                 "wikipedia.org",
                 "towardsdatascience.com",
+                "medium.com",
+                "realpython.com",
+                "freecodecamp.org",
+                "kaggle.com",
+                "analyticsvidhya.com",
+                "machinelearningmastery.com",
+                "openai.com",
+                "anthropic.com",
+                "huggingface.co",
             ],
         )
         for item in result.results:
@@ -56,8 +65,8 @@ def research_node(state: ContentState) -> dict:
             print(f"      🔗 {item.url}")
             print(f"      📝 {exa_result.snippet[:100]}...")
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"✅ Research complete — {len(query_results)} results collected")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     return {"research": query_results}

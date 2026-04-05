@@ -5,9 +5,9 @@ import os
 
 
 def writer_node(state: ContentState) -> dict:
-    print(f"\n{'='*60}")
-    print(f"✍️  WRITER NODE")
-    print(f"{'='*60}")
+    print(f"\n{'=' * 60}")
+    print("✍️  WRITER NODE")
+    print(f"{'=' * 60}")
 
     plan = state["plan"]
     item = SyllabusItem(**state["item"])
@@ -20,12 +20,13 @@ Heading: {section.heading}
 Concept: {section.concept}
 Target Word Count: {section.target_words} words
 Key Points to expand on:
-{chr(10).join(f'  - {point}' for point in section.key_points)}
+{chr(10).join(f"  - {point}" for point in section.key_points)}
 ---
 """
 
     research_text = ""
     for brief in state["research_summary"]:
+        additional_urls_str = "\n".join(f"  - {url}" for url in brief.additional_urls)
         research_text += f"""
 ╔══ RESEARCH DOSSIER: {brief.concept} ══╗
 
@@ -52,6 +53,10 @@ FUN FACT        : {brief.fun_fact}
 [Use verbatim — do not invent or modify]
 DIVE DEEPER URL : {brief.best_url}
 
+[ADDITIONAL URLs for Further Reading — use ALL of these in Further Reading sections]
+ADDITIONAL URLS :
+{additional_urls_str}
+
 ╚═══════════════════════════════════════╝
 """
 
@@ -76,6 +81,6 @@ DIVE DEEPER URL : {brief.best_url}
     word_count = len(draft.split())
 
     print(f"   ✅ Draft written — {word_count} words")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     return {"draft": draft}

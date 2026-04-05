@@ -96,7 +96,7 @@ Good example:
 
 exa_queries
 
-Provide up to 2 search queries that would help find:
+Provide exactly 3 search queries that would help find:
 - examples
 - case studies
 - explanations
@@ -149,7 +149,7 @@ Each Section object must have EXACTLY:
 - concept: string (copy from the concepts list)
 - heading: string
 - key_points: array of exactly 3 strings
-- exa_queries: array of exactly 2 strings
+- exa_queries: array of exactly 3 strings
 - target_words: integer, always 500
 
 No markdown. No explanation. No extra fields. JSON only.

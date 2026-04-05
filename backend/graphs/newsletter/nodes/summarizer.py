@@ -5,9 +5,9 @@ import os
 
 
 def summarizer_node(state: ContentState) -> dict:
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("📝 SUMMARIZER NODE")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     plan = state["plan"]
     research = state["research"]
@@ -16,13 +16,15 @@ def summarizer_node(state: ContentState) -> dict:
 
     llm = ChatGroq(model="llama-3.3-70b-versatile", api_key=os.getenv("GROQ_API_KEY"))
 
-    results_per_concept = len(research) // len(plan.sections)
+    base_count = len(research) // len(plan.sections)
+    remainder = len(research) % len(plan.sections)
 
     briefs = []
+    offset = 0
     for i, section in enumerate(plan.sections):
-        start = i * results_per_concept
-        end = start + results_per_concept
-        concept_results = research[start:end]
+        count = base_count + (1 if i < remainder else 0)
+        concept_results = research[offset : offset + count]
+        offset += count
 
         print(f"\n🔎 Distilling: '{section.concept}' ({len(concept_results)} results)")
 
@@ -46,8 +48,8 @@ def summarizer_node(state: ContentState) -> dict:
         if brief.additional_urls:
             print(f"   📚 Additional: {len(brief.additional_urls)} extra URLs")
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"✅ Summarization complete — {len(briefs)} concept briefs ready")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     return {"research_summary": briefs}
