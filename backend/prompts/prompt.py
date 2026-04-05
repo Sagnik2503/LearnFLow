@@ -464,6 +464,7 @@ CONSTRAINTS:
 
 ---
 OUTPUT FORMAT:
-Use the provided tool schema to return your response.
-If no issues found, set approved to true with an empty feedbacks list.
+Use the pydantic schema CriticOutput and return a JSON object with exactly these fields:
+   - feedbacks: list of Feedback objects
+   - approved: boolean (true or false)
 """
