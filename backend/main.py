@@ -12,6 +12,7 @@ from db.database import init_db, SessionLocal
 from db.crud import get_syllabus, get_track, get_or_create_user, create_subscription, unsubscribe
 from graphs.builder.curriculum_builder import run_curriculum_graph
 from schema.schemas import SubscribeRequest, SubscribeResponse
+from utils.scheduler import scheduler
 
 # ── Init ────────────────────────────────────────────
 init_db()

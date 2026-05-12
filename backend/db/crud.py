@@ -103,6 +103,16 @@ def unsubscribe(db: Session, user_track_id: int):
     return user_track
 
 
+def advance_user_track_day(db: Session, user_track_id: int) -> UserTrack | None:
+    """Increment current_day on a user_track by 1."""
+    user_track = db.query(UserTrack).filter(UserTrack.id == user_track_id).first()
+    if user_track:
+        user_track.current_day += 1
+        db.commit()
+        db.refresh(user_track)
+    return user_track
+
+
 def get_active_tracks_for_generation(db: Session):
     """Get all active user_tracks that still have days remaining."""
     return (
