@@ -3,7 +3,7 @@ from typing import List, TypedDict
 
 
 class SubscribeRequest(BaseModel):
-    topic: str = Field(description="Topic to learn")
+    track_id: int = Field(description="ID of the track to subscribe to")
     email: str = Field(description="Email for daily newsletters")
     delivery_time: str = Field(
         default="09:00", description="Time to receive newsletter (HH:MM)"

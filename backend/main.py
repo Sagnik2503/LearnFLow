@@ -71,39 +71,40 @@ async def health_check():
 
 @app.post("/api/subscribe", response_model=SubscribeResponse)
 async def subscribe(req: SubscribeRequest):
-    """Subscribe to daily newsletters for a topic."""
-    print(f"📩 Subscribe request: email={req.email}, topic={req.topic}, time={req.delivery_time}")
-    if not req.topic or not req.topic.strip():
-        raise HTTPException(status_code=400, detail="Topic cannot be empty")
+    """Subscribe to daily newsletters for an existing track."""
+    print(f"📩 Subscribe request: email={req.email}, track_id={req.track_id}, time={req.delivery_time}")
     if not req.email or not req.email.strip():
         raise HTTPException(status_code=400, detail="Email is required")
 
+    db = SessionLocal()
     try:
-        result = run_curriculum_graph(req.topic.strip())
+        track = get_track(db, req.track_id)
+        if not track:
+            raise HTTPException(status_code=404, detail="Track not found")
 
-        db = SessionLocal()
-        try:
-            user = get_or_create_user(db, req.email.strip())
-            create_subscription(
-                db,
-                user_id=user.id,
-                track_id=result["track_id"],
-                total_days=result["total_days"],
-                delivery_time=req.delivery_time,
-            )
-        finally:
-            db.close()
+        user = get_or_create_user(db, req.email.strip())
+        create_subscription(
+            db,
+            user_id=user.id,
+            track_id=track.id,
+            total_days=track.total_days,
+            delivery_time=req.delivery_time,
+        )
 
         return SubscribeResponse(
-            track_id=result["track_id"],
-            topic=result["topic"],
-            total_days=result["total_days"],
+            track_id=track.id,
+            topic=track.topic,
+            total_days=track.total_days,
             message=f"Subscribed! You'll receive daily newsletters at {req.delivery_time}",
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"❌ Subscription failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        db.close()
 
 
 @app.post("/api/unsubscribe/{user_track_id}", response_model=UnsubscribeResponse)

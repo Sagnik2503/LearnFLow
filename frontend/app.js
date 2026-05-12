@@ -464,7 +464,7 @@ async function handleSubscribe() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        topic: state.topic,
+        track_id: state.trackId,
         email: state.email,
         delivery_time: state.deliveryTime,
       }),
