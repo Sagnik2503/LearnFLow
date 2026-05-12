@@ -7,7 +7,9 @@ from db.crud import (
     create_newsletter,
     advance_user_track_day,
 )
+from db.models import SyllabusItem
 from utils.create_newsletter import build_newsletter
+from utils.email import send_newsletter_email
 
 
 def deliver_newsletters():
@@ -28,7 +30,18 @@ def deliver_newsletters():
 
             try:
                 content = build_newsletter(db, ut.track_id, day)
+
+                syllabus_item = db.query(SyllabusItem).filter_by(track_id=ut.track_id, day=day).first()
+                title = syllabus_item.title if syllabus_item else f"Day {day}"
+
                 create_newsletter(db, ut.id, day, content)
+
+                send_newsletter_email(
+                    to_email=ut.user.email,
+                    subject=f"Day {day}: {title}",
+                    markdown_content=content,
+                )
+
                 advance_user_track_day(db, ut.id)
 
                 print(f"     ✅ Day {day} generated & sent to {ut.user.email}")
