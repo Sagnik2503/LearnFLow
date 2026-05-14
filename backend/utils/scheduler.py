@@ -40,6 +40,7 @@ def deliver_newsletters():
                     to_email=ut.user.email,
                     subject=f"Day {day}: {title}",
                     markdown_content=content,
+                    user_track_id=ut.id,
                 )
 
                 advance_user_track_day(db, ut.id)

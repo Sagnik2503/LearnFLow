@@ -264,8 +264,7 @@ function renderBentoGrid(data) {
   state.subscribed = false;
 
   // Update header
-  document.getElementById('syllabus-topic-badge').textContent = data.topic.toUpperCase();
-  document.getElementById('syllabus-title').textContent = `Your ${data.total_days}-Day Learning Path`;
+  document.getElementById('syllabus-title').textContent = data.topic;
   document.getElementById('syllabus-days-count').textContent = data.totalDays;
   document.getElementById('syllabus-delivery-time').textContent = formatTime(state.deliveryTime);
   document.getElementById('subscribe-time-display').textContent = formatTime(state.deliveryTime);

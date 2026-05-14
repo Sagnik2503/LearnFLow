@@ -108,7 +108,7 @@ async def subscribe(req: SubscribeRequest):
         db.close()
 
 
-@app.post("/api/unsubscribe/{user_track_id}", response_model=UnsubscribeResponse)
+@app.api_route("/api/unsubscribe/{user_track_id}", methods=["GET", "POST"], response_model=UnsubscribeResponse)
 async def unsubscribe_endpoint(user_track_id: int):
     """Unsubscribe from a track."""
     db = SessionLocal()
@@ -116,6 +116,7 @@ async def unsubscribe_endpoint(user_track_id: int):
         result = unsubscribe(db, user_track_id)
         if not result:
             raise HTTPException(status_code=404, detail="Subscription not found")
+        print(f"✅ Unsubscribed user_track {user_track_id}")
         return {"message": "Unsubscribed successfully"}
     finally:
         db.close()

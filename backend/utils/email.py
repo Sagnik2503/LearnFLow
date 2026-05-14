@@ -57,9 +57,9 @@ def _preprocess_markdown(md: str) -> dict:
         r'<div class="callout-icon">💡</div>'
         r'<div class="callout-content">'
         r'<span class="callout-label">Did you know?</span>'
-        r'\1'
-        r'</div>'
-        r'</div>',
+        r"\1"
+        r"</div>"
+        r"</div>",
         md,
     )
 
@@ -83,7 +83,7 @@ def _preprocess_markdown(md: str) -> dict:
                     f'<a href="{link_url}" class="further-link" target="_blank" rel="noopener">'
                     f'<span class="link-title">{link_title}</span>'
                     f'<span class="link-arrow">→</span>'
-                    f'</a>'
+                    f"</a>"
                 )
             else:
                 # Fallback: just use the raw text
@@ -95,8 +95,8 @@ def _preprocess_markdown(md: str) -> dict:
             f'<div class="callout-content">'
             f'<span class="callout-label">Further Reading</span>'
             f'<div class="link-list">{link_items}</div>'
-            f'</div>'
-            f'</div>'
+            f"</div>"
+            f"</div>"
         )
 
     md = re.sub(
@@ -128,9 +128,15 @@ def wrap_email_html(
     html_body: str,
     day_num: int = 1,
     total_days: int = 30,
+    user_track_id: int | None = None,
 ) -> str:
     progress = int((day_num / total_days) * 100)
     lessons_remaining = total_days - day_num
+
+    backend_base = os.getenv("FRONTEND_URL", "http://localhost:8000").rstrip("/")
+    unsubscribe_url = (
+        f"{backend_base}/api/unsubscribe/{user_track_id}" if user_track_id else "#"
+    )
 
     return f"""
     <!DOCTYPE html>
@@ -301,24 +307,35 @@ def wrap_email_html(
                 border-bottom-color: #e0d4ec !important;
             }}
 
-            /* ── CTA ── */
-            .cta-section {{ padding: 10px 50px 40px; text-align: center; }}
-            .cta-btn {{
-                background-color: #1a1410; color: #ffffff !important; padding: 14px 32px;
-                border-radius: 10px; text-decoration: none; font-size: 15px; font-weight: 500;
-                display: inline-block; letter-spacing: 0.3px;
+            /* ── UNSUBSCRIBE ── */
+            .unsubscribe-section {{ padding: 10px 50px 40px; text-align: center; }}
+            .unsubscribe-link {{
+                color: #8a7560; font-size: 13px; text-decoration: underline;
+                letter-spacing: 0.3px;
             }}
+            .unsubscribe-link:hover {{ color: #c47a5a; }}
 
-            /* ── FOOTER ── */
-            .footer {{ text-align: center; margin-top: 24px; padding: 0 20px; }}
-            .footer p {{
-                font-size: 13px; color: #8a7560; font-style: italic; margin: 0;
+            /* ── BRAND FOOTER ── */
+            .brand-footer {{ text-align: center; margin-top: 32px; padding: 0 20px; }}
+            .brand-footer p {{
+                font-size: 13px; color: #8a7560; margin: 2px 0;
+                letter-spacing: 0.2px;
+            }}
+            .brand-footer a {{
+                color: #c47a5a; text-decoration: none;
+            }}
+            .brand-footer a:hover {{ text-decoration: underline; }}
+
+            /* ── QUOTE FOOTER ── */
+            .quote-footer {{ text-align: center; margin-top: 8px; padding: 0 20px 10px; }}
+            .quote-footer p {{
+                font-size: 12px; color: #a09080; font-style: italic; margin: 0;
                 letter-spacing: 0.2px;
             }}
 
             /* ── MOBILE ── */
             @media only screen and (max-width: 600px) {{
-                .hero, .progress-container, .body-content, .cta-section {{
+                .hero, .progress-container, .body-content, .unsubscribe-section {{
                     padding-left: 20px; padding-right: 20px;
                 }}
                 .hero h1 {{ font-size: 24px; }}
@@ -350,14 +367,20 @@ def wrap_email_html(
                         {html_body}
                     </div>
 
-                    <!-- CTA -->
-                    <div class="cta-section">
-                        <a href="#" class="cta-btn">Mark as Learned ✓</a>
+                    <!-- UNSUBSCRIBE -->
+                    <div class="unsubscribe-section">
+                        <a href="{unsubscribe_url}" class="unsubscribe-link">Unsubscribe from this course</a>
                     </div>
                 </div>
 
-                <!-- FOOTER -->
-                <div class="footer">
+                <!-- BRAND FOOTER -->
+                <div class="brand-footer">
+                    <p>Made by <a href="https://github.com/Sagnik2503" target="_blank" rel="noopener">Sagnik</a> ❤️</p>
+                    <p><a href="https://github.com/Sagnik2503/LearnFlow" target="_blank" rel="noopener">LearnFlow on GitHub</a></p>
+                </div>
+
+                <!-- QUOTE FOOTER -->
+                <div class="quote-footer">
                     <p>"Knowledge is the only asset that grows when shared."</p>
                 </div>
             </div>
@@ -399,6 +422,7 @@ def send_newsletter_email(
     to_email: str,
     subject: str,
     markdown_content: str,
+    user_track_id: int | None = None,
 ):
     # 1. Preprocess markdown: extract banner, convert callouts to HTML
     cleaned_md, extracted = _preprocess_markdown(markdown_content)
@@ -417,6 +441,7 @@ def send_newsletter_email(
         html_body=html_body,
         day_num=day_num,
         total_days=total_days,
+        user_track_id=user_track_id,
     )
 
     # 5. Send

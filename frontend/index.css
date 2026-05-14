@@ -553,40 +553,13 @@ body {
   color: var(--accent);
 }
 
-.topic-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  background: var(--accent-subtle);
-  border: 1px solid var(--accent-border);
-  border-radius: 99px;
-  color: var(--accent);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 1rem;
-}
-
-.preview-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  color: var(--text-muted);
-  font-size: 0.7rem;
-  font-weight: 500;
-  margin-left: 8px;
-  margin-bottom: 1rem;
-  vertical-align: middle;
-}
-
 .syllabus-header h1 {
   font-family: 'DM Serif Display', serif;
-  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
   font-weight: 400;
   margin-bottom: 0.5rem;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+  color: var(--text);
 }
 
 .syllabus-header .meta {

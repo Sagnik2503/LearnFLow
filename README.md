@@ -67,41 +67,69 @@ LearnFlow/
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
+### Prerequisites
+
+- Python 3.13+
+- [uv](https://docs.astral.sh/uv/) (Python package manager)
+
+### 1. Clone & Navigate
+
+```bash
+git clone https://github.com/sagnik-sengupta/LearnFlow.git
+cd LearnFlow
+```
+
+### 2. Backend Setup
 
 ```bash
 cd backend
 uv sync
 ```
 
-### 2. Configure Environment
+### 3. Configure Environment
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your API keys:
+Edit `.env` with your API keys — you'll need all three:
 ```bash
-ANTHROPIC_API_KEY=your_key
-GROQ_API_KEY=your_key
-EXA_API_KEY=your_key
-FRONTEND_URL=http://localhost:3000
+GROQ_API_KEY=gsk_...                     # Groq for summarization
+EXA_API_KEY=...                          # Exa for semantic web research
+FRONTEND_URL=http://localhost:3000       # Optional, for CORS
+EMAIL_APP_PASSWORD=...                   # Optional, for sending emails via Gmail
+TEST_MAIL=                               # The mail that we want to send it to
 ```
 
-### 3. Run the Backend
+### 4. Run the Backend
 
 ```bash
 cd backend
-uvicorn main:app --reload
+python mian.py
 ```
 
-### 4. Run the Frontend
+The API starts at **http://localhost:8000**.
+
+### 5. Run the Frontend
+
+In a separate terminal:
 
 ```bash
-python3 -m http.server 3000 --directory frontend
+cd frontend
+python3 -m http.server 3000
 ```
 
-Open http://localhost:3000 in your browser.
+Open **http://localhost:3000** in your browser.
+```
+
+### 7. Send a Test Email (optional)
+
+```bash
+cd backend
+python test/test_email.py
+```
+
+> **Note:** Requires `EMAIL_APP_PASSWORD` set in `.env`. Uses a Gmail app password — generate one at [Google App Passwords](https://myaccount.google.com/apppasswords).
 
 ---
 
@@ -120,26 +148,6 @@ Open http://localhost:3000 in your browser.
 ---
 
 
-## 🧪 Testing
-
-```bash
-# Run a specific test script
-cd backend
-python test/test_email.py
-
-# Run the test API server
-uvicorn test.test_backend:test_app --reload
-
-# Type check
-mypy backend/
-
-# Lint
-ruff check .
-
-# Format
-ruff format .
-```
-
 ---
 
 ## 📋 Design Decisions
@@ -153,8 +161,3 @@ Raw Exa results exceed model context limits. The Summarizer distills each concep
 **Why LLM-first writing?**
 The LLM owns the narrative for consistent tone and depth. Research enriches with facts and links — it never replaces the writing.
 
----
-
-## 📝 Developer Guidelines
-
-See [AGENTS.md](./AGENTS.md) for detailed code style, patterns, and conventions.
